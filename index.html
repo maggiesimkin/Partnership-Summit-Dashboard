@@ -1,0 +1,1913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Partnership Summit 2026 — Event Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    /* Primary — Partnership Summit Blue (from banner) */
+    --blue-dark:    #1A3F7A;
+    --blue-mid:     #2B5EAC;
+    --blue-light:   #4A78C8;
+    --blue-pale:    #EBF1FB;
+    --blue-border:  #C5D6F0;
+
+    /* Secondary — PCMA Brand */
+    --mauve-dark:   #590044;
+    --mauve-mid:    #6F004F;
+    --mauve-light:  #85165A;
+    --teal:         #60E5CF;
+    --teal-dark:    #38b8a0;
+
+    /* Neutrals */
+    --neutral-mid:  #C8D4E8;
+    --neutral-light:#F0F4FB;
+    --bg:           #F4F7FC;
+    --surface:      #FFFFFF;
+    --text-primary: #0F1E3A;
+    --text-secondary:#4A6080;
+    --border:       #D4E0F0;
+
+    /* Status */
+    --flag-red:     #C0392B;
+    --flag-amber:   #D4730A;
+    --flag-green:   #1A7A4A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text-primary);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 55%, var(--blue-light) 100%);
+    padding: 28px 40px 24px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 4px 24px rgba(26,63,122,0.30);
+  }
+
+  .header-left h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 26px;
+    color: white;
+    letter-spacing: -0.3px;
+    line-height: 1;
+  }
+
+  .header-left .subtitle {
+    font-size: 12px;
+    color: rgba(255,255,255,0.65);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    margin-top: 5px;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .week-badge {
+    background: rgba(96,229,207,0.18);
+    border: 1px solid rgba(96,229,207,0.45);
+    color: var(--teal);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 5px 14px;
+    border-radius: 20px;
+    letter-spacing: 0.5px;
+  }
+
+  .last-updated {
+    font-size: 11px;
+    color: rgba(255,255,255,0.5);
+  }
+
+  /* UPLOAD BAR */
+  .upload-bar {
+    background: var(--neutral-light);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 40px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  .upload-bar-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-right: 4px;
+  }
+
+  .upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: white;
+    border: 1.5px dashed var(--neutral-mid);
+    border-radius: 8px;
+    padding: 7px 14px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .upload-btn:hover { border-color: var(--blue-mid); color: var(--blue-dark); background: var(--blue-pale); }
+  .upload-btn.loaded { border-style: solid; border-color: var(--flag-green); color: var(--flag-green); background: #f0faf5; }
+  .upload-btn .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--neutral-mid); flex-shrink: 0; }
+  .upload-btn.loaded .dot { background: var(--flag-green); }
+
+  input[type="file"] { display: none; }
+
+  /* MAIN LAYOUT */
+  .main { padding: 28px 40px; display: flex; flex-direction: column; gap: 24px; }
+
+  /* FLAGS PANEL */
+  .flags-panel {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .flags-header {
+    background: linear-gradient(90deg, var(--blue-pale), white);
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .flags-header h2 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    color: var(--blue-dark);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .flag-count-badge {
+    background: var(--flag-red);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+
+  .flags-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 8px; }
+
+  .flag-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 11px 14px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .flag-item.red { background: #FEF2F2; border-left: 3px solid var(--flag-red); }
+  .flag-item.amber { background: #FFF8F0; border-left: 3px solid var(--flag-amber); }
+  .flag-item.green { background: #F0FAF5; border-left: 3px solid var(--flag-green); }
+
+  .flag-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+  .flag-text strong { font-weight: 600; display: block; }
+  .flag-text span { color: var(--text-secondary); font-size: 12px; }
+
+  .no-flags { color: var(--text-secondary); font-size: 13px; font-style: italic; padding: 8px 0; }
+
+  /* METRICS GRID */
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+
+  .metric-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  /* Each card gets a distinct accent — blue primary + PCMA secondaries */
+  .metric-card.reg::before     { background: var(--blue-mid); }
+  .metric-card.housing::before { background: var(--mauve-light); }
+  .metric-card.travel::before  { background: var(--teal-dark); }
+  .metric-card.revenue::before { background: var(--blue-dark); }
+
+  .metric-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 1.2px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .metric-value {
+    font-family: 'DM Serif Display', serif;
+    font-size: 34px;
+    color: var(--text-primary);
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+
+  .metric-sub {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 10px;
+  }
+
+  .metric-wow {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 3px 9px;
+    border-radius: 12px;
+  }
+
+  .metric-wow.up   { background: #f0faf5; color: var(--flag-green); }
+  .metric-wow.down { background: #fef2f2; color: var(--flag-red); }
+  .metric-wow.flat { background: var(--neutral-light); color: var(--text-secondary); }
+
+  .metric-goal-bar {
+    margin-top: 12px;
+    height: 5px;
+    background: var(--neutral-light);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .metric-goal-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.6s ease;
+  }
+
+  .metric-goal-fill.reg     { background: var(--blue-mid); }
+  .metric-goal-fill.housing { background: var(--mauve-light); }
+  .metric-goal-fill.travel  { background: var(--teal-dark); }
+  .metric-goal-fill.revenue { background: var(--blue-dark); }
+
+  .metric-goal-label { font-size: 10px; color: var(--text-secondary); margin-top: 5px; }
+
+  /* CHARTS ROW */
+  .charts-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 16px;
+  }
+
+  .chart-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .chart-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--blue-dark);
+    margin-bottom: 16px;
+  }
+
+  .chart-wrap { position: relative; height: 220px; }
+
+  /* DETAIL TABLES */
+  .detail-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .detail-card {
+    background: white;
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+
+  .detail-card-header {
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .detail-card-header h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 15px;
+    color: var(--blue-dark);
+  }
+
+  .detail-card-header .source-tag {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: var(--neutral-light);
+    padding: 3px 9px;
+    border-radius: 10px;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  th {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    text-align: left;
+    padding: 10px 18px 8px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+
+  td {
+    font-size: 13px;
+    padding: 10px 18px;
+    border-bottom: 1px solid var(--blue-border);
+    color: var(--text-primary);
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--blue-pale); }
+
+  .td-wow { font-weight: 600; }
+  .td-wow.pos { color: var(--flag-green); }
+  .td-wow.neg { color: var(--flag-red); }
+
+  .td-flag { font-size: 14px; }
+
+  /* INSIGHTS — blue primary, teal accent, mauve highlight */
+  .insights-card {
+    background: linear-gradient(135deg, var(--blue-dark) 0%, var(--blue-mid) 70%, #3A6CC4 100%);
+    border-radius: 12px;
+    padding: 22px 24px;
+    color: white;
+  }
+
+  .insights-card h3 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 16px;
+    margin-bottom: 14px;
+    opacity: 0.95;
+  }
+
+  .insight-item {
+    display: flex;
+    gap: 10px;
+    font-size: 13px;
+    line-height: 1.5;
+    margin-bottom: 10px;
+    opacity: 0.9;
+  }
+
+  .insight-item:last-child { margin-bottom: 0; }
+  .insight-dot { color: var(--teal); font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+  /* EMPTY STATE */
+  .empty-state {
+    text-align: center;
+    padding: 32px 20px;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+
+  .empty-state .icon { font-size: 28px; margin-bottom: 8px; }
+  .empty-state p { opacity: 0.7; }
+
+  /* TOOLTIP */
+  .tooltip { position: relative; display: inline-block; }
+  .tooltip:hover::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--text-primary);
+    color: white;
+    font-size: 11px;
+    padding: 4px 10px;
+    border-radius: 6px;
+    white-space: nowrap;
+    z-index: 10;
+  }
+
+  /* Responsive */
+  @media (max-width: 1100px) {
+    .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    .charts-row { grid-template-columns: 1fr; }
+    .detail-row { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 700px) {
+    .main { padding: 16px; }
+    .header { padding: 18px 16px 14px; }
+    .upload-bar { padding: 12px 16px; }
+    .metrics-grid { grid-template-columns: 1fr 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <h1>Partnership Summit 2026</h1>
+    <div class="subtitle">Vancouver, BC &nbsp;·&nbsp; Aug 27–30 &nbsp;·&nbsp; Event Intelligence Dashboard</div>
+  </div>
+  <div class="header-right">
+    <div class="week-badge" id="weekBadge">Week of March 9, 2026</div>
+    <div class="last-updated" id="lastUpdated">No data loaded</div>
+  </div>
+</div>
+
+<!-- UPLOAD BAR -->
+<div class="upload-bar">
+  <span class="upload-bar-label">Data Sources</span>
+
+  <button class="upload-btn" id="btn-reg" onclick="document.getElementById('file-reg').click()">
+    <span class="dot" id="dot-reg"></span> Rainfocus · Registration
+  </button>
+  <input type="file" id="file-reg" accept=".csv,.xls,.xlsx" onchange="handleUpload('reg', this)">
+
+  <button class="upload-btn" id="btn-housing" onclick="document.getElementById('file-housing').click()">
+    <span class="dot" id="dot-housing"></span> Passkey · Housing
+  </button>
+  <input type="file" id="file-housing" accept=".csv,.xls,.xlsx" onchange="handleUpload('housing', this)">
+
+  <button class="upload-btn" id="btn-travel" onclick="document.getElementById('file-travel').click()">
+    <span class="dot" id="dot-travel"></span> ATC · Travel
+  </button>
+  <input type="file" id="file-travel" accept=".csv,.xls,.xlsx" onchange="handleUpload('travel', this)">
+
+  <button class="upload-btn loaded" id="btn-revenue" style="cursor:default">
+    <span class="dot" id="dot-revenue" style="background:var(--flag-green)"></span> Salesforce · Revenue &amp; Partnerships
+  </button>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FLAGS -->
+  <div class="flags-panel">
+    <div class="flags-header">
+      <h2>⚑ Cross-Source Flags &amp; Inconsistencies <span class="flag-count-badge" id="flagCount">0</span></h2>
+      <span style="font-size:12px;color:var(--text-secondary)">Cross-source inconsistencies auto-detected when data is uploaded</span>
+    </div>
+    <div class="flags-body" id="flagsBody">
+      <div class="no-flags">Salesforce revenue flags are active. Cross-source flags (reg vs. travel vs. housing) will appear once Rainfocus, Passkey, and ATC data is uploaded.</div>
+    </div>
+  </div>
+
+  <!-- METRIC CARDS -->
+  <div class="metrics-grid">
+    <div class="metric-card reg" id="card-reg">
+      <div class="metric-label">Registration · Rainfocus</div>
+      <div class="metric-value" id="reg-value">—</div>
+      <div class="metric-sub" id="reg-sub">Not yet open</div>
+      <span class="metric-wow flat" id="reg-wow">Opens soon</span>
+      <div class="metric-goal-bar"><div class="metric-goal-fill reg" id="reg-bar" style="width:0%"></div></div>
+      <div class="metric-goal-label" id="reg-goal-label">Upload export to populate</div>
+    </div>
+    <div class="metric-card housing" id="card-housing">
+      <div class="metric-label">Housing · Passkey</div>
+      <div class="metric-value" id="housing-value">—</div>
+      <div class="metric-sub" id="housing-sub">Not yet open</div>
+      <span class="metric-wow flat" id="housing-wow">Opens soon</span>
+      <div class="metric-goal-bar"><div class="metric-goal-fill housing" id="housing-bar" style="width:0%"></div></div>
+      <div class="metric-goal-label" id="housing-goal-label">Upload export to populate</div>
+    </div>
+    <div class="metric-card travel" id="card-travel">
+      <div class="metric-label">Travel · ATC</div>
+      <div class="metric-value" id="travel-value">—</div>
+      <div class="metric-sub" id="travel-sub">Not yet open</div>
+      <span class="metric-wow flat" id="travel-wow">Opens soon</span>
+      <div class="metric-goal-bar"><div class="metric-goal-fill travel" id="travel-bar" style="width:0%"></div></div>
+      <div class="metric-goal-label" id="travel-goal-label">Upload export to populate</div>
+    </div>
+    <div class="metric-card revenue" id="card-revenue">
+      <div class="metric-label">Partnership Revenue</div>
+      <div class="metric-value" id="revenue-value">—</div>
+      <div class="metric-sub" id="revenue-sub">total confirmed</div>
+      <span class="metric-wow flat" id="revenue-wow">WoW: —</span>
+      <div class="metric-goal-bar"><div class="metric-goal-fill revenue" id="revenue-bar" style="width:0%"></div></div>
+      <div class="metric-goal-label" id="revenue-goal-label">—% of goal</div>
+    </div>
+  </div>
+
+  <!-- CHARTS ROW -->
+  <div class="charts-row">
+    <div class="chart-card">
+      <h3>Week-over-Week Momentum <span style="font-size:11px;font-weight:400;color:var(--text-secondary);font-family:'DM Sans',sans-serif">· Rainfocus · Passkey · ATC</span></h3>
+      <div class="chart-wrap"><canvas id="wowChart"></canvas></div>
+    </div>
+    <div class="chart-card" style="display:flex;flex-direction:column;justify-content:space-between">
+      <h3>Revenue to Goal</h3>
+      <!-- Big progress bar -->
+      <div id="rev-goal-display">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+          <span style="font-family:'DM Serif Display',serif;font-size:28px;color:var(--text-primary)" id="rev-confirmed-label">$600,000</span>
+          <span style="font-size:12px;color:var(--text-secondary)">of <strong style="color:var(--text-primary)">$1,000,000</strong> goal</span>
+        </div>
+        <!-- Stacked bar: confirmed + pipeline + gap -->
+        <div style="height:28px;border-radius:8px;overflow:hidden;display:flex;background:var(--neutral-light);margin-bottom:10px">
+          <div id="rev-bar-confirmed" style="height:100%;background:var(--blue-dark);transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:8px;min-width:0">
+            <span id="rev-bar-confirmed-label" style="font-size:10px;font-weight:700;color:white;white-space:nowrap"></span>
+          </div>
+          <div id="rev-bar-pipeline" style="height:100%;background:var(--blue-light);opacity:0.7;transition:width .6s ease;display:flex;align-items:center;justify-content:flex-end;padding-right:6px;min-width:0">
+            <span id="rev-bar-pipeline-label" style="font-size:10px;font-weight:600;color:white;white-space:nowrap"></span>
+          </div>
+        </div>
+        <!-- Legend row -->
+        <div style="display:flex;gap:16px;flex-wrap:wrap;margin-bottom:14px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--blue-dark)"></div>
+            <span style="font-size:11px;color:var(--text-secondary)">Confirmed: <strong id="rev-confirmed-amt" style="color:var(--text-primary)">$600,000</strong></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--blue-light);opacity:.8"></div>
+            <span style="font-size:11px;color:var(--text-secondary)">Pipeline: <strong id="rev-pipeline-amt" style="color:var(--text-primary)">$125,000</strong></span>
+          </div>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="width:10px;height:10px;border-radius:2px;background:var(--neutral-light);border:1px solid var(--border)"></div>
+            <span style="font-size:11px;color:var(--text-secondary)">Gap: <strong id="rev-gap-amt" style="color:var(--text-primary)">$275,000</strong></span>
+          </div>
+        </div>
+        <!-- Partner count row -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+          <div style="background:var(--blue-pale);border-radius:8px;padding:10px 12px;text-align:center">
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--blue-dark)" id="rev-closed-count">23</div>
+            <div style="font-size:10px;color:var(--text-secondary);margin-top:2px">Closed Won</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center">
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--blue-light)" id="rev-pipeline-count">5</div>
+            <div style="font-size:10px;color:var(--text-secondary);margin-top:2px">In Pipeline</div>
+          </div>
+          <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px;text-align:center">
+            <div style="font-family:'DM Serif Display',serif;font-size:20px;color:var(--text-primary)" id="rev-pct-label">60%</div>
+            <div style="font-size:10px;color:var(--text-secondary);margin-top:2px">of $1M goal</div>
+          </div>
+        </div>
+        <!-- Overdue callout -->
+        <div id="rev-overdue-callout" style="margin-top:10px;padding:8px 12px;background:#FFF8F0;border-left:3px solid var(--flag-amber);border-radius:0 6px 6px 0;font-size:11px;color:var(--flag-amber);display:none">
+          ⚠ <strong id="rev-overdue-text"></strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DETAIL TABLES -->
+  <div class="detail-row">
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <h3>Registration Breakdown</h3>
+        <span class="source-tag">Rainfocus · not yet open</span>
+      </div>
+      <div id="reg-table-wrap">
+        <div class="empty-state"><div class="icon">📋</div><p>Registration hasn't opened yet. Upload a Rainfocus export when available.</p></div>
+      </div>
+    </div>
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <h3>Housing &amp; Travel Status</h3>
+        <span class="source-tag">Passkey · ATC · not yet open</span>
+      </div>
+      <div id="housing-table-wrap">
+        <div class="empty-state"><div class="icon">🏨</div><p>Housing (Passkey) and Travel (ATC) haven't opened yet. Upload exports when available.</p></div>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- YOY TRAVEL: FORM PACING + FLIGHT COST TRACKER -->
+  <div class="detail-card" style="overflow:hidden">
+    <div class="detail-card-header">
+      <h3>✈ Travel — Year-over-Year Pacing &amp; Flight Cost Tracker</h3>
+      <div style="display:flex;gap:8px;align-items:center">
+        <span class="source-tag">ATC + Flight Request Form · 2025 baseline</span>
+        <button onclick="document.getElementById('file-flightcost').click()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:7px;padding:5px 12px;cursor:pointer">↑ Upload 2026 Costs</button>
+        <input type="file" id="file-flightcost" accept=".csv" onchange="handleFlightCostUpload(this)" style="display:none">
+      </div>
+    </div>
+
+    <!-- SUMMARY STATS ROW -->
+    <div style="padding:16px 20px 14px;display:grid;grid-template-columns:repeat(7,1fr);gap:12px;border-bottom:1px solid var(--border);background:var(--bg)">
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2025 Forms</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">112</div>
+        <div style="font-size:10px;color:var(--text-secondary)">requests submitted</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2025 Travelers</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">192</div>
+        <div style="font-size:10px;color:var(--text-secondary)">primary + guests ticketed</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">Guests (2025)</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">79</div>
+        <div style="font-size:10px;color:var(--text-secondary)">of 112 brought a guest</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">Peak Form Window</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">9–8w</div>
+        <div style="font-size:10px;color:var(--text-secondary)">before event · 28 forms</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2025 Flight Cost</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-secondary)" id="cost2025-stat">—</div>
+        <div style="font-size:10px;color:var(--text-secondary)">upload ATC invoice to set</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2026 Cost To Date</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--blue-mid)" id="cost2026-stat">$0</div>
+        <div style="font-size:10px;color:var(--text-secondary)" id="cost2026-sub">0 tickets booked</div>
+      </div>
+      <div>
+        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">Avg per Ticket</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--blue-mid)" id="costAvg-stat">—</div>
+        <div style="font-size:10px;color:var(--text-secondary)" id="costAvg-sub">2026 vs <span id="costAvg-2025">— 2025</span></div>
+      </div>
+    </div>
+
+    <!-- TWO-COLUMN CHARTS -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0;border-bottom:1px solid var(--border)">
+      <!-- Left: Form submission pacing -->
+      <div style="padding:16px 20px 20px;border-right:1px solid var(--border)">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px">Flight Request Form Pacing — cumulative submissions</div>
+        <div style="position:relative;height:180px"><canvas id="formPacingChart"></canvas></div>
+        <div style="margin-top:12px;display:grid;grid-template-columns:repeat(4,1fr);gap:6px">
+          <div style="text-align:center;padding:7px 6px;background:var(--blue-pale);border-radius:7px;border:1px solid var(--blue-border)">
+            <div style="font-size:13px;font-weight:700;color:var(--blue-dark)">1 form · 4 booked</div>
+            <div style="font-size:9px;color:var(--text-secondary)">20w out (2025)</div>
+            <div style="font-size:9px;color:var(--teal-dark);font-weight:600">≈ now '26</div>
+          </div>
+          <div style="text-align:center;padding:7px 6px;background:var(--bg);border-radius:7px;border:1px solid var(--border)">
+            <div style="font-size:13px;font-weight:700;color:var(--text-primary)">12 forms · 20 booked</div>
+            <div style="font-size:9px;color:var(--text-secondary)">16w out (2025)</div>
+            <div style="font-size:9px;color:var(--text-secondary)">Apr 27 '26</div>
+          </div>
+          <div style="text-align:center;padding:7px 6px;background:var(--bg);border-radius:7px;border:1px solid var(--border)">
+            <div style="font-size:13px;font-weight:700;color:var(--text-primary)">35 forms · 56 booked</div>
+            <div style="font-size:9px;color:var(--text-secondary)">12w out (2025)</div>
+            <div style="font-size:9px;color:var(--text-secondary)">Jun 2 '26</div>
+          </div>
+          <div style="text-align:center;padding:7px 6px;background:var(--bg);border-radius:7px;border:1px solid var(--border)">
+            <div style="font-size:13px;font-weight:700;color:var(--text-primary)">86 forms · 148 booked</div>
+            <div style="font-size:9px;color:var(--text-secondary)">8w out (2025)</div>
+            <div style="font-size:9px;color:var(--text-secondary)">Jul 2 '26</div>
+          </div>
+        </div>
+      </div>
+      <!-- Right: Flight cost tracker -->
+      <div style="padding:16px 20px 20px">
+        <div style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:12px">Flight Cost by Week — 2026 vs 2025 budget baseline</div>
+        <div style="position:relative;height:180px"><canvas id="flightCostChart"></canvas></div>
+        <div id="flight-cost-empty" style="display:flex;align-items:center;justify-content:center;height:180px;margin-top:-180px;pointer-events:none">
+          <div style="text-align:center;color:var(--text-secondary)">
+            <div style="font-size:22px;margin-bottom:6px">📄</div>
+            <div style="font-size:12px;font-weight:500">Upload a CSV with columns:<br><code style="font-size:11px;background:var(--bg);padding:2px 6px;border-radius:4px">week, tickets, total_cost</code></div>
+            <div style="font-size:11px;margin-top:6px;color:var(--text-secondary);opacity:.7">As ATC sends invoices, log each week's<br>ticket count and cumulative spend</div>
+          </div>
+        </div>
+        <!-- Manual cost entry -->
+        <div style="margin-top:14px;padding:12px 14px;background:var(--blue-pale);border-radius:8px">
+          <div style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blue-dark);margin-bottom:8px">Quick Add — Log a week's costs</div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input id="fc-week" type="text" placeholder="Week (e.g. Jun-2)" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:90px;background:white;color:var(--text-primary)">
+            <input id="fc-tickets" type="number" placeholder="# tickets" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:80px;background:white;color:var(--text-primary)">
+            <input id="fc-cost" type="number" placeholder="Total cost $" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:100px;background:white;color:var(--text-primary)">
+            <button onclick="addFlightCostEntry()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer">+ Add</button>
+            <button onclick="clearFlightCosts()" style="font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-secondary);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FLIGHT COST LOG TABLE -->
+    <div id="flight-cost-log-wrap" style="display:none;padding:0">
+      <div style="padding:10px 20px 0;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-secondary)">2026 Flight Cost Log</div>
+      <table id="flight-cost-log-table" style="min-width:500px">
+        <thead><tr>
+          <th>Week</th><th style="text-align:right">Tickets</th><th style="text-align:right">Week Cost</th><th style="text-align:right">Avg/Ticket</th><th style="text-align:right">Cumulative</th>
+        </tr></thead>
+        <tbody id="flight-cost-log-body"></tbody>
+      </table>
+    </div>
+
+    <!-- ATC pacing row (shows when ATC data uploaded) -->
+    <div id="yoy-2026-row" style="display:none;margin:12px 20px;padding:12px 14px;background:var(--blue-pale);border-radius:8px;font-size:12px;color:var(--blue-dark)">
+      <strong>2026 ATC live pacing active.</strong> Booking curve overlaid on chart above.
+    </div>
+  </div>
+
+  <!-- REVENUE DETAIL + INSIGHTS -->
+  <div class="charts-row">
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <h3>Partnership Revenue Detail</h3>
+        <span class="source-tag">Salesforce · as of Mar 10</span>
+      </div>
+      <div id="revenue-table-wrap">
+        <div class="empty-state"><div class="icon">💼</div><p>Upload revenue CSV to see sponsor detail.</p></div>
+      </div>
+    </div>
+    <div class="insights-card" id="insightsCard">
+      <h3>✦ Auto Insights</h3>
+      <div class="insight-item"><span class="insight-dot">›</span><span>Revenue insights are live from Salesforce. Upload Rainfocus, Passkey, and ATC exports when registration, housing, and travel open to unlock full cross-source analysis.</span></div>
+    </div>
+  </div>
+
+  <!-- SPONSOR MASTER TRACKER -->
+  <div class="flags-panel" style="margin-top:0">
+    <div class="flags-header" style="background:linear-gradient(90deg,var(--blue-pale),white)">
+      <h2 style="color:var(--blue-dark)">
+        <span style="font-family:'DM Serif Display',serif;font-size:16px">Sponsor Master Tracker</span>
+        <span style="font-size:11px;font-weight:400;font-family:'DM Sans',sans-serif;color:var(--text-secondary);margin-left:8px">Maggie &amp; Stacey · updated from CSV</span>
+      </h2>
+      <div style="display:flex;align-items:center;gap:12px">
+        <div id="sponsor-summary-badges" style="display:flex;gap:8px"></div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <label style="font-size:11px;font-weight:600;color:var(--text-secondary);letter-spacing:.5px">FILTER:</label>
+          <select id="sponsor-filter" onchange="filterSponsorTable()" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--border);border-radius:6px;padding:4px 8px;background:white;color:var(--text-primary);cursor:pointer">
+            <option value="all">All Sponsors</option>
+            <option value="flags">Has Action Items</option>
+            <option value="closed">Closed Won</option>
+            <option value="pipeline">Pipeline</option>
+            <option value="notsf">Not in Salesforce</option>
+            <option value="nologo">Missing Logo</option>
+            <option value="nocontact">Missing Contact</option>
+            <option value="noform">No Commitment Form</option>
+            <option value="confirmname">Name Needs Confirming</option>
+          </select>
+        </div>
+        <button onclick="document.getElementById('file-sponsor').click()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:7px;padding:6px 14px;cursor:pointer">↑ Update CSV</button>
+        <input type="file" id="file-sponsor" accept=".csv" onchange="handleSponsorUpload(this)" style="display:none">
+      </div>
+    </div>
+    <div style="overflow-x:auto">
+      <table id="sponsor-master-table" style="min-width:900px">
+        <thead>
+          <tr>
+            <th style="min-width:180px">Sponsor</th>
+            <th>Status</th>
+            <th>Revenue</th>
+            <th style="text-align:center">In SF</th>
+            <th style="text-align:center">Logo</th>
+            <th style="text-align:center">Contact</th>
+            <th style="text-align:center">Commit Form</th>
+            <th style="text-align:center">Registered</th>
+            <th style="text-align:center">Flight</th>
+            <th style="text-align:center">Dine Around</th>
+            <th style="text-align:center">MSOE</th>
+            <th>Liaison</th>
+            <th style="min-width:140px">Action Items</th>
+          </tr>
+        </thead>
+        <tbody id="sponsor-table-body"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── STATE ───────────────────────────────────────────────
+const state = {
+  reg: null,
+  housing: null,
+  travel: null,
+  revenue: null  // not used — SF data is hardcoded below
+};
+
+// ─── SALESFORCE DATA (hardcoded from export Mar 10 2026) ──
+const SF_CLOSED_WON = [
+  { name: "Ottawa Tourism 2026 Explore Marketing Agreement", amount: 25000, closeDate: "2026-01-21", level: "Explore" },
+  { name: "New Orleans & Company 2026 Excel Partnership", amount: 25000, closeDate: "2026-02-03", level: "Excel" },
+  { name: "New Orleans Ernest N. Morial Convention Center 2026 Excel Partnership", amount: 25000, closeDate: "2026-02-03", level: "Excel" },
+  { name: "Tourisme Montreal 2026 Engage Partnership", amount: 25000, closeDate: "2026-01-22", level: "Engage" },
+  { name: "IHG Hotels & Resorts 2026 Engage Partnership", amount: 25000, closeDate: "2026-01-08", level: "Engage" },
+  { name: "Destination Toronto 2026 Experience Partnership", amount: 25000, closeDate: "2026-02-12", level: "Experience" },
+  { name: "Hilton FYDec2025-26 Engage Partnership", amount: 25000, closeDate: "2026-02-03", level: "Engage" },
+  { name: "Visit Orlando - 2026 Excel Partnership", amount: 25000, closeDate: "2025-11-05", level: "Excel" },
+  { name: "Visit Tampa Bay - 2025-2026 Excel Partnership", amount: 25000, closeDate: "2025-10-14", level: "Excel" },
+  { name: "Visit Austin FYOct-2025-26 Excel Partnership", amount: 25000, closeDate: "2025-12-15", level: "Excel" },
+  { name: "Visit Savannah - 2026 EXPLORE", amount: 25000, closeDate: "2025-10-16", level: "Explore" },
+  { name: "Atlanta Convention and Visitors Bureau - 2025-2026 ENGAGE Partnership", amount: 50000, closeDate: "2025-10-29", level: "Engage" },
+  { name: "Visit San Antonio FY26 - Explore Sponsor", amount: 25000, closeDate: "2025-12-29", level: "Explore" },
+  { name: "Long Beach CVB FY25-26 Explore Level", amount: 25000, closeDate: "2025-10-23", level: "Explore" },
+  { name: "Visit Indy - 2026 - Engage Partnership", amount: 25000, closeDate: "2026-01-21", level: "Engage" },
+  { name: "Encore - 2026 - Engage Partnership", amount: 25000, closeDate: "2026-01-08", level: "Engage" },
+  { name: "Visit KC - 2026 Engage Partnership", amount: 25000, closeDate: "2025-12-23", level: "Engage" },
+  { name: "Visit Milwaukee - 2025-2026 - Engage Partnership", amount: 25000, closeDate: "2025-12-05", level: "Engage" },
+  { name: "Visit Greater Palm Springs - 2025-2026 - Engage Partnership", amount: 25000, closeDate: "2025-12-29", level: "Engage" },
+  { name: "Visit Fort Worth - 2025/2026 - Engage Partnership", amount: 25000, closeDate: "2025-12-15", level: "Engage" },
+  { name: "Visit Anaheim - 2025-2026 - Engage Partnership", amount: 25000, closeDate: "2026-01-02", level: "Engage" },
+  { name: "Visit Salt Lake 2026 Engage Partnership", amount: 25000, closeDate: "2025-12-16", level: "Engage" },
+  { name: "Caesars Entertainment FY2025/2026 Engage Partnership", amount: 25000, closeDate: "2025-10-27", level: "Engage" },
+];
+
+const SF_PIPELINE = [
+  { name: "Marriott International 2026 Experience Partnership", amount: 25000, closeDate: "2025-12-19", level: "Experience" },
+  { name: "Experience Columbus 2026 Engage Partnership", amount: 25000, closeDate: "2026-03-13", level: "Engage" },
+  { name: "Events DC - FYOct2025-26 Engage Partnership", amount: 25000, closeDate: "2025-09-30", level: "Engage" },
+  { name: "Visit Seattle - 2026 - Experience Partnership", amount: 25000, closeDate: "2025-12-15", level: "Experience" },
+  { name: "Houston First Corporation - 2026 - Engage Partnership", amount: 25000, closeDate: "2026-03-27", level: "Engage" },
+];
+
+let wowChartInst = null;
+
+// ─── CSV UPLOAD ───────────────────────────────────────────
+function handleUpload(source, input) {
+  const file = input.files[0];
+  if (!file) return;
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      state[source] = results.data;
+      markLoaded(source, file.name);
+      refreshDashboard();
+    }
+  });
+}
+
+function markLoaded(source, filename) {
+  const btn = document.getElementById('btn-' + source);
+  btn.classList.add('loaded');
+  const labels = { reg: 'Rainfocus · Registration', housing: 'Passkey · Housing', travel: 'ATC · Travel', revenue: 'Salesforce · Revenue' };
+  btn.innerHTML = `<span class="dot" id="dot-${source}" style="background:var(--flag-green)"></span> ${labels[source]}: ${filename}`;
+}
+
+// ─── SAMPLE DATA ──────────────────────────────────────────
+function loadSampleData() {
+  // Registration: weekly snapshots by type
+  state.reg = [
+    { week: 'Wk1', type: 'Exhibitor', count: '45', revenue: '67500', goal: '120' },
+    { week: 'Wk1', type: 'Attendee', count: '112', revenue: '78400', goal: '300' },
+    { week: 'Wk1', type: 'Sponsor', count: '18', revenue: '90000', goal: '40' },
+    { week: 'Wk2', type: 'Exhibitor', count: '61', revenue: '91500', goal: '120' },
+    { week: 'Wk2', type: 'Attendee', count: '178', revenue: '124600', goal: '300' },
+    { week: 'Wk2', type: 'Sponsor', count: '22', revenue: '110000', goal: '40' },
+    { week: 'Wk3', type: 'Exhibitor', count: '74', revenue: '111000', goal: '120' },
+    { week: 'Wk3', type: 'Attendee', count: '231', revenue: '161700', goal: '300' },
+    { week: 'Wk3', type: 'Sponsor', count: '27', revenue: '135000', goal: '40' },
+    { week: 'Wk4', type: 'Exhibitor', count: '89', revenue: '133500', goal: '120' },
+    { week: 'Wk4', type: 'Attendee', count: '284', revenue: '198800', goal: '300' },
+    { week: 'Wk4', type: 'Sponsor', count: '29', revenue: '145000', goal: '40' },
+    { week: 'Wk5', type: 'Exhibitor', count: '98', revenue: '147000', goal: '120' },
+    { week: 'Wk5', type: 'Attendee', count: '312', revenue: '218400', goal: '300' },
+    { week: 'Wk5', type: 'Sponsor', count: '31', revenue: '155000', goal: '40' },
+  ];
+
+  // Housing: weekly room pickup
+  state.housing = [
+    { week: 'Wk1', hotel: 'Marriott Pinnacle', rooms_blocked: '200', rooms_picked_up: '22', attrition_risk: 'low' },
+    { week: 'Wk1', hotel: 'JW Marriott Parq', rooms_blocked: '150', rooms_picked_up: '18', attrition_risk: 'low' },
+    { week: 'Wk2', hotel: 'Marriott Pinnacle', rooms_blocked: '200', rooms_picked_up: '58', attrition_risk: 'low' },
+    { week: 'Wk2', hotel: 'JW Marriott Parq', rooms_blocked: '150', rooms_picked_up: '41', attrition_risk: 'medium' },
+    { week: 'Wk3', hotel: 'Marriott Pinnacle', rooms_blocked: '200', rooms_picked_up: '103', attrition_risk: 'low' },
+    { week: 'Wk3', hotel: 'JW Marriott Parq', rooms_blocked: '150', rooms_picked_up: '62', attrition_risk: 'medium' },
+    { week: 'Wk4', hotel: 'Marriott Pinnacle', rooms_blocked: '200', rooms_picked_up: '141', attrition_risk: 'low' },
+    { week: 'Wk4', hotel: 'JW Marriott Parq', rooms_blocked: '150', rooms_picked_up: '78', attrition_risk: 'medium' },
+    { week: 'Wk5', hotel: 'Marriott Pinnacle', rooms_blocked: '200', rooms_picked_up: '162', attrition_risk: 'low' },
+    { week: 'Wk5', hotel: 'JW Marriott Parq', rooms_blocked: '150', rooms_picked_up: '81', attrition_risk: 'high' },
+  ];
+
+  // Travel: weekly bookings
+  state.travel = [
+    { week: 'Wk1', attendee_id: '', booked: '41', transfers_arranged: '38', airline: 'various' },
+    { week: 'Wk2', attendee_id: '', booked: '124', transfers_arranged: '98', airline: 'various' },
+    { week: 'Wk3', attendee_id: '', booked: '197', transfers_arranged: '145', airline: 'various' },
+    { week: 'Wk4', attendee_id: '', booked: '261', transfers_arranged: '201', airline: 'various' },
+    { week: 'Wk5', attendee_id: '', booked: '309', transfers_arranged: '244', airline: 'various' },
+  ];
+
+  // Revenue: sponsors by week
+  state.revenue = [
+    { week: 'Wk3', sponsor: 'Cvent', tier: 'Platinum', amount: '75000', status: 'confirmed', category: 'Tech' },
+    { week: 'Wk2', sponsor: 'Marriott Bonvoy Events', tier: 'Gold', amount: '40000', status: 'confirmed', category: 'Hospitality' },
+    { week: 'Wk1', sponsor: 'PSAV / Encore', tier: 'Gold', amount: '35000', status: 'confirmed', category: 'AV/Production' },
+    { week: 'Wk4', sponsor: 'Hilton for Business', tier: 'Silver', amount: '20000', status: 'confirmed', category: 'Hospitality' },
+    { week: 'Wk3', sponsor: 'Nuvei', tier: 'Silver', amount: '18000', status: 'pending', category: 'Finance' },
+    { week: 'Wk5', sponsor: 'Destination Canada', tier: 'Bronze', amount: '12000', status: 'confirmed', category: 'Tourism' },
+    { week: 'Wk4', sponsor: 'IMEX Group', tier: 'Bronze', amount: '10000', status: 'pending', category: 'Media' },
+    { week: 'Wk5', sponsor: 'Air Canada', tier: 'Bronze', amount: '8000', status: 'confirmed', category: 'Travel' },
+  ];
+
+  ['reg','housing','travel'].forEach(s => markLoaded(s, 'sample-data.csv'));
+  refreshDashboard();
+}
+
+// ─── REFRESH ──────────────────────────────────────────────
+function refreshDashboard() {
+  const derived = computeDerived();
+  renderMetricCards(derived);
+  renderFlags(derived);
+  renderWoWChart(derived);
+  renderRevGoal(derived);
+  renderYOYChart(derived);
+  renderFormPacingChart(derived);
+  renderRegTable(derived);
+  renderHousingTable(derived);
+  renderRevenueTable(derived);
+  renderInsights(derived);
+  updateHeaderMeta(derived);
+}
+
+function computeDerived() {
+  const d = {};
+
+  // ── REGISTRATION ──
+  if (state.reg) {
+    const weeks = [...new Set(state.reg.map(r => r.week))].sort();
+    const latestWk = weeks[weeks.length - 1];
+    const prevWk = weeks[weeks.length - 2];
+
+    const latestRows = state.reg.filter(r => r.week === latestWk);
+    const prevRows = prevWk ? state.reg.filter(r => r.week === prevWk) : [];
+
+    d.regTotal = latestRows.reduce((s, r) => s + parseInt(r.count || 0), 0);
+    d.regPrev = prevRows.reduce((s, r) => s + parseInt(r.count || 0), 0);
+    d.regWoW = d.regPrev ? d.regTotal - d.regPrev : 0;
+    d.regRevenue = latestRows.reduce((s, r) => s + parseFloat(r.revenue || 0), 0);
+    d.regGoal = latestRows.reduce((s, r) => s + parseInt(r.goal || 0), 0);
+    d.regByType = latestRows.map(r => ({ type: r.type, count: parseInt(r.count || 0), revenue: parseFloat(r.revenue || 0), goal: parseInt(r.goal || 0) }));
+    d.regWeeks = weeks;
+    d.regWeeklyTotals = weeks.map(w => state.reg.filter(r => r.week === w).reduce((s, r) => s + parseInt(r.count || 0), 0));
+    d.latestWk = latestWk;
+  }
+
+  // ── HOUSING ──
+  if (state.housing) {
+    const weeks = [...new Set(state.housing.map(r => r.week))].sort();
+    const latestWk = weeks[weeks.length - 1];
+    const prevWk = weeks[weeks.length - 2];
+
+    const latestRows = state.housing.filter(r => r.week === latestWk);
+    const prevRows = prevWk ? state.housing.filter(r => r.week === prevWk) : [];
+
+    d.housingTotal = latestRows.reduce((s, r) => s + parseInt(r.rooms_picked_up || 0), 0);
+    d.housingBlocked = latestRows.reduce((s, r) => s + parseInt(r.rooms_blocked || 0), 0);
+    d.housingPrev = prevRows.reduce((s, r) => s + parseInt(r.rooms_picked_up || 0), 0);
+    d.housingWoW = d.housingPrev ? d.housingTotal - d.housingPrev : 0;
+    d.housingByHotel = latestRows.map(r => ({ hotel: r.hotel, picked: parseInt(r.rooms_picked_up || 0), blocked: parseInt(r.rooms_blocked || 0), risk: r.attrition_risk }));
+    d.housingWeeks = weeks;
+    d.housingWeeklyTotals = weeks.map(w => state.housing.filter(r => r.week === w).reduce((s, r) => s + parseInt(r.rooms_picked_up || 0), 0));
+  }
+
+  // ── TRAVEL ──
+  if (state.travel) {
+    const weeks = [...new Set(state.travel.map(r => r.week))].sort();
+    const latestWk = weeks[weeks.length - 1];
+    const prevWk = weeks[weeks.length - 2];
+
+    const latest = state.travel.find(r => r.week === latestWk) || {};
+    const prev = prevWk ? state.travel.find(r => r.week === prevWk) : null;
+
+    d.travelTotal = parseInt(latest.booked || 0);
+    d.travelTransfers = parseInt(latest.transfers_arranged || 0);
+    d.travelPrev = prev ? parseInt(prev.booked || 0) : 0;
+    d.travelWoW = d.travelPrev ? d.travelTotal - d.travelPrev : 0;
+    d.travelWeeks = weeks;
+    d.travelWeeklyTotals = weeks.map(w => { const r = state.travel.find(x => x.week === w) || {}; return parseInt(r.booked || 0); });
+  }
+
+  // ── REVENUE (Salesforce) ──
+  {
+    const SF_REVENUE_GOAL = 1000000; // program goal
+    d.revenueConfirmed = SF_CLOSED_WON.reduce((s, r) => s + r.amount, 0);
+    d.revenuePending = SF_PIPELINE.reduce((s, r) => s + r.amount, 0);
+    d.revenueTotal = d.revenueConfirmed + d.revenuePending;
+    d.revenueGoal = SF_REVENUE_GOAL;
+    d.sfClosedWon = SF_CLOSED_WON;
+    d.sfPipeline  = SF_PIPELINE;
+    d.sfPipeline = SF_PIPELINE;
+
+    // Level breakdown
+    d.revByLevel = {};
+    SF_CLOSED_WON.forEach(r => { d.revByLevel[r.level] = (d.revByLevel[r.level] || 0) + r.amount; });
+
+    // Velocity by month (closed won)
+    const byMonth = {};
+    SF_CLOSED_WON.forEach(r => {
+      const m = r.closeDate.substring(0, 7);
+      byMonth[m] = (byMonth[m] || 0) + r.amount;
+    });
+    d.revMonths = Object.keys(byMonth).sort();
+    d.revMonthlyTotals = d.revMonths.map(m => byMonth[m]);
+    d.revMonthlyCumulative = d.revMonthlyTotals.reduce((acc, v) => { acc.push((acc[acc.length-1] || 0) + v); return acc; }, []);
+
+    // WoW proxy: most recent month vs prior
+    d.revenueWoW = d.revMonthlyTotals[d.revMonthlyTotals.length - 1] || 0;
+
+    // Overdue pipeline: close date already passed
+    const today = new Date('2026-03-10');
+    d.overduePipeline = SF_PIPELINE.filter(r => new Date(r.closeDate) < today);
+  }
+
+  return d;
+}
+
+// ─── METRIC CARDS ─────────────────────────────────────────
+function renderMetricCards(d) {
+  if (d.regTotal !== undefined) {
+    document.getElementById('reg-value').textContent = d.regTotal.toLocaleString();
+    document.getElementById('reg-sub').textContent = `attendees registered · $${fmt(d.regRevenue)} revenue`;
+    renderWoW('reg-wow', d.regWoW, 'attendees');
+    const pct = d.regGoal ? Math.min(100, Math.round(d.regTotal / d.regGoal * 100)) : 0;
+    document.getElementById('reg-bar').style.width = pct + '%';
+    document.getElementById('reg-goal-label').textContent = `${pct}% of goal (${d.regGoal} target)`;
+  }
+  if (d.housingTotal !== undefined) {
+    document.getElementById('housing-value').textContent = d.housingTotal.toLocaleString();
+    document.getElementById('housing-sub').textContent = `of ${d.housingBlocked} rooms blocked`;
+    renderWoW('housing-wow', d.housingWoW, 'rooms');
+    const pct = d.housingBlocked ? Math.min(100, Math.round(d.housingTotal / d.housingBlocked * 100)) : 0;
+    document.getElementById('housing-bar').style.width = pct + '%';
+    document.getElementById('housing-goal-label').textContent = `${pct}% of block (${d.housingBlocked} total rooms)`;
+  }
+  if (d.travelTotal !== undefined) {
+    document.getElementById('travel-value').textContent = d.travelTotal.toLocaleString();
+    const pct = d.regTotal ? Math.round(d.travelTotal / d.regTotal * 100) : 0;
+    document.getElementById('travel-sub').textContent = `of ${d.regTotal || '—'} registered · ${d.travelTransfers} transfers`;
+    renderWoW('travel-wow', d.travelWoW, 'bookings');
+    document.getElementById('travel-bar').style.width = Math.min(100, pct) + '%';
+    document.getElementById('travel-goal-label').textContent = `${pct}% of registered attendees`;
+  }
+  // Revenue always renders from SF data
+  {
+    document.getElementById('revenue-value').textContent = '$' + fmt(d.revenueConfirmed);
+    document.getElementById('revenue-sub').textContent = `${d.sfClosedWon.length} partners closed · $${fmt(d.revenuePending)} pipeline`;
+    const revenueEl = document.getElementById('revenue-wow');
+    revenueEl.textContent = `Feb closed: +$${fmt(d.revenueWoW)}`;
+    revenueEl.className = 'metric-wow up';
+    const pct = Math.min(100, Math.round(d.revenueConfirmed / d.revenueGoal * 100));
+    document.getElementById('revenue-bar').style.width = pct + '%';
+    document.getElementById('revenue-goal-label').textContent = `${pct}% of $${fmt(d.revenueGoal)} total (confirmed + pipeline)`;
+  }
+}
+
+function renderWoW(id, val, unit, isMoney) {
+  const el = document.getElementById(id);
+  if (!val && val !== 0) return;
+  const sign = val > 0 ? '+' : '';
+  const display = isMoney ? `${sign}$${fmt(Math.abs(val))}` : `${sign}${val} ${unit}`;
+  el.textContent = `WoW: ${display}`;
+  el.className = 'metric-wow ' + (val > 0 ? 'up' : val < 0 ? 'down' : 'flat');
+}
+
+function fmt(n) {
+  if (n >= 1000000) return (n/1000000).toFixed(1) + 'M';
+  if (n >= 1000) return Math.round(n/1000) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+// ─── FLAGS ────────────────────────────────────────────────
+function renderFlags(d) {
+  const flags = [];
+
+  // Reg vs Travel gap
+  if (d.regTotal && d.travelTotal) {
+    const gap = d.regTotal - d.travelTotal;
+    const pct = Math.round((gap / d.regTotal) * 100);
+    if (pct > 20) {
+      flags.push({ level: 'red', icon: '🚨', title: `${gap} registered attendees have NO travel booking (${pct}%)`, detail: `${d.travelTotal} travel bookings vs. ${d.regTotal} registrations. Follow-up campaign recommended.` });
+    } else if (pct > 10) {
+      flags.push({ level: 'amber', icon: '⚠️', title: `${gap} registered attendees missing travel booking (${pct}%)`, detail: 'Monitor closely. Consider a reminder email to unbooked registrants.' });
+    }
+  }
+
+  // Travel transfers gap
+  if (d.travelTotal && d.travelTransfers) {
+    const gap = d.travelTotal - d.travelTransfers;
+    if (gap > 30) {
+      flags.push({ level: 'amber', icon: '⚠️', title: `${gap} travel bookings lack ground transfer arrangements`, detail: 'Attendees have flights but no airport transfer. Coordinate with ground transport vendor.' });
+    }
+  }
+
+  // Reg vs Housing gap
+  if (d.regTotal && d.housingTotal) {
+    const pct = Math.round((d.housingTotal / d.regTotal) * 100);
+    if (pct < 60) {
+      flags.push({ level: 'red', icon: '🚨', title: `Housing pickup at only ${pct}% of registered attendees`, detail: `${d.housingTotal} rooms vs. ${d.regTotal} registrations. May indicate off-block bookings. Verify attrition exposure.` });
+    }
+  }
+
+  // Housing attrition risk
+  if (state.housing) {
+    const weeks = [...new Set(state.housing.map(r => r.week))].sort();
+    const latestWk = weeks[weeks.length - 1];
+    const highRisk = state.housing.filter(r => r.week === latestWk && r.attrition_risk === 'high');
+    highRisk.forEach(h => {
+      const pct = Math.round(parseInt(h.rooms_picked_up) / parseInt(h.rooms_blocked) * 100);
+      flags.push({ level: 'red', icon: '🚨', title: `${h.hotel}: HIGH attrition risk (${pct}% pickup of ${h.rooms_blocked} blocked rooms)`, detail: 'Pickup rate is dangerously low. Contact hotel to renegotiate block or redirect attendees.' });
+    });
+    const medRisk = state.housing.filter(r => r.week === latestWk && r.attrition_risk === 'medium');
+    medRisk.forEach(h => {
+      flags.push({ level: 'amber', icon: '⚠️', title: `${h.hotel}: Medium attrition risk — monitor closely`, detail: `Consider early outreach to drive pickup before next reporting period.` });
+    });
+  }
+
+  // Specific high-priority sponsor issues
+  const clarifySponsors = sponsorData.filter(s => s.needsClarification || s.status.toLowerCase().includes('clarify'));
+  if (clarifySponsors.length > 0) {
+    flags.push({ level: 'red', icon: '🚨', title: `Georgia Convention Center needs clarification — same contact as Atlanta CVB (Charlene Lopez)`, detail: 'Charlene Lopez appears as the contact for both. Confirm if Georgia Convention Center is a separate sponsor or a duplicate entry.' });
+  }
+  const dupForms = sponsorData.filter(s => s.formDuplicate);
+  if (dupForms.length > 0) {
+    flags.push({ level: 'amber', icon: '⚠️', title: `Hilton submitted the commitment form twice (IDs #12 and #13)`, detail: 'Joni Opperman submitted on 3/4 and again on 3/6. Confirm which submission is authoritative and mark the duplicate.' });
+  }
+
+  // Sponsor master flags
+  const notInSF = sponsorData.filter(s => s.status.toLowerCase().includes('not in sf'));
+  if (notInSF.length > 0) {
+    flags.push({ level: 'red', icon: '🚨', title: `${notInSF.length} sponsor(s) have a commitment form but are NOT in Salesforce`, detail: notInSF.map(s => s.name.split('(')[0].trim()).join(', ') + ' — contracts need to be created in SF.' });
+  }
+  const missingContact = sponsorData.filter(s => (!s.contact || !s.email) && !s.status.toLowerCase().includes('host') && s.name.trim());
+  if (missingContact.length > 0) {
+    flags.push({ level: 'red', icon: '🚨', title: `${missingContact.length} sponsors missing contact name or email address`, detail: missingContact.map(s => s.name.split('(')[0].trim()).join(', ') });
+  }
+  const missingLogo = sponsorData.filter(s => !s.logo && !s.status.toLowerCase().includes('host') && s.name.trim());
+  if (missingLogo.length > 0) {
+    flags.push({ level: 'amber', icon: '⚠️', title: `${missingLogo.length} sponsors haven't provided their logo`, detail: missingLogo.map(s => s.name.split('(')[0].trim()).join(', ') });
+  }
+  const confirmNames = sponsorData.filter(s => s.name.toLowerCase().includes('confirm'));
+  if (confirmNames.length > 0) {
+    flags.push({ level: 'amber', icon: '⚠️', title: `${confirmNames.length} sponsor names need to be confirmed before materials go out`, detail: confirmNames.map(s => s.name).join(' · ') });
+  }
+  const noForm = sponsorData.filter(s => !s.form && (s.status.toLowerCase().includes('closed') || s.status.toLowerCase().includes('pipeline')));
+  if (noForm.length > 0) {
+    flags.push({ level: 'amber', icon: '⚠️', title: `${noForm.length} closed/pipeline sponsors haven't submitted their commitment form`, detail: noForm.map(s => s.name.split('(')[0].trim()).join(', ') });
+  }
+
+  // Overdue pipeline (SF)
+  if (d.overduePipeline && d.overduePipeline.length > 0) {
+    const overdueTot = d.overduePipeline.reduce((s, r) => s + r.amount, 0);
+    flags.push({ level: 'red', icon: '🚨', title: `${d.overduePipeline.length} pipeline partner(s) past close date — $${fmt(overdueTot)} at risk`, detail: d.overduePipeline.map(r => r.name.split(' ').slice(0,4).join(' ')).join(', ') + '. Follow up to confirm or reclassify.' });
+  }
+
+  // Pipeline as % of confirmed
+  if (d.revenuePending && d.revenueConfirmed) {
+    const pct = Math.round(d.revenuePending / (d.revenueConfirmed + d.revenuePending) * 100);
+    flags.push({ level: 'amber', icon: '⚠️', title: `$${fmt(d.revenuePending)} in pipeline (Buying Decision) — ${d.sfPipeline.length} partners not yet closed`, detail: `${pct}% of total pipeline still at risk. Prioritize conversion before Aug event.` });
+  }
+
+  // Revenue milestone
+  if (d.revenueConfirmed) {
+    const pct = Math.round(d.revenueConfirmed / d.revenueGoal * 100);
+    flags.push({ level: 'green', icon: '✅', title: `$${fmt(d.revenueConfirmed)} confirmed across ${d.sfClosedWon.length} partners (${pct}% of total pipeline)`, detail: `Atlanta CVB is the only double-value partner at $50K. All others at $25K.` });
+  }
+
+  // Registration pace
+  if (d.regTotal && d.regGoal) {
+    const pct = Math.round(d.regTotal / d.regGoal * 100);
+    if (pct >= 80) {
+      flags.push({ level: 'green', icon: '✅', title: `Registration at ${pct}% of goal — strong pace`, detail: `${d.regTotal} of ${d.regGoal} target attendees confirmed.` });
+    }
+  }
+
+  const body = document.getElementById('flagsBody');
+  document.getElementById('flagCount').textContent = flags.filter(f => f.level !== 'green').length;
+  if (flags.length === 0) {
+    body.innerHTML = '<div class="no-flags">No flags detected. All data sources look consistent.</div>';
+    return;
+  }
+  body.innerHTML = flags.map(f => `
+    <div class="flag-item ${f.level}">
+      <span class="flag-icon">${f.icon}</span>
+      <div class="flag-text">
+        <strong>${f.title}</strong>
+        <span>${f.detail}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ─── WoW CHART ────────────────────────────────────────────
+function renderWoWChart(d) {
+  const ctx = document.getElementById('wowChart').getContext('2d');
+
+  // Get union of weeks
+  const allWeeks = [...new Set([
+    ...(d.regWeeks || []),
+    ...(d.housingWeeks || []),
+    ...(d.travelWeeks || [])
+  ])].sort();
+
+  if (allWeeks.length === 0) return;
+
+  const datasets = [];
+  if (d.regWeeks) datasets.push({ label: 'Registration', data: d.regWeeklyTotals, borderColor: '#2B5EAC', backgroundColor: 'rgba(43,94,172,0.08)', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#2B5EAC', fill: false });
+  if (d.housingWeeks) datasets.push({ label: 'Housing (rooms)', data: d.housingWeeklyTotals, borderColor: '#85165A', backgroundColor: 'rgba(133,22,90,0.08)', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#85165A', fill: false });
+  if (d.travelWeeks) datasets.push({ label: 'Travel Bookings', data: d.travelWeeklyTotals, borderColor: '#38b8a0', backgroundColor: 'rgba(56,184,160,0.08)', tension: 0.4, pointRadius: 4, pointBackgroundColor: '#38b8a0', fill: false });
+
+  if (wowChartInst) wowChartInst.destroy();
+  wowChartInst = new Chart(ctx, {
+    type: 'line',
+    data: { labels: allWeeks, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { labels: { font: { family: 'DM Sans', size: 11 }, color: '#4A6080', boxWidth: 14 } } },
+      scales: {
+        x: { ticks: { font: { family: 'DM Sans', size: 11 }, color: '#4A6080' }, grid: { color: '#D4E0F0' } },
+        y: { ticks: { font: { family: 'DM Sans', size: 11 }, color: '#4A6080' }, grid: { color: '#D4E0F0' }, beginAtZero: true }
+      }
+    }
+  });
+}
+
+// ─── REVENUE TO GOAL ──────────────────────────────────────
+function renderRevGoal(d) {
+  if (!d.revenueConfirmed) return;
+  const goal = d.revenueGoal;
+  const confirmed = d.revenueConfirmed;
+  const pipeline = d.revenuePending;
+  const gap = Math.max(0, goal - confirmed - pipeline);
+  const confirmedPct = Math.min(100, confirmed / goal * 100);
+  const pipelinePct  = Math.min(100 - confirmedPct, pipeline / goal * 100);
+
+  document.getElementById('rev-confirmed-label').textContent = '$' + fmt(confirmed);
+  document.getElementById('rev-confirmed-amt').textContent   = '$' + fmt(confirmed);
+  document.getElementById('rev-pipeline-amt').textContent    = '$' + fmt(pipeline);
+  document.getElementById('rev-gap-amt').textContent         = '$' + fmt(gap);
+  document.getElementById('rev-closed-count').textContent    = d.sfClosedWon.length;
+  document.getElementById('rev-pipeline-count').textContent  = d.sfPipeline ? d.sfPipeline.length : '—';
+  document.getElementById('rev-pct-label').textContent       = Math.round(confirmedPct) + '%';
+
+  document.getElementById('rev-bar-confirmed').style.width = confirmedPct + '%';
+  document.getElementById('rev-bar-pipeline').style.width  = pipelinePct + '%';
+
+  // Only show text labels if there's enough room
+  document.getElementById('rev-bar-confirmed-label').textContent = confirmedPct > 12 ? Math.round(confirmedPct) + '%' : '';
+  document.getElementById('rev-bar-pipeline-label').textContent  = pipelinePct  > 8  ? Math.round(pipelinePct)  + '%' : '';
+
+  // Overdue callout
+  if (d.overduePipeline && d.overduePipeline.length > 0) {
+    const names = d.overduePipeline.map(r => r.name.split(' ')[0] + ' ' + (r.name.split(' ')[1] || '')).join(', ');
+    document.getElementById('rev-overdue-text').textContent =
+      `${d.overduePipeline.length} overdue pipeline partner${d.overduePipeline.length > 1 ? 's' : ''} — ${names}`;
+    document.getElementById('rev-overdue-callout').style.display = 'block';
+  }
+}
+
+// ─── YOY TRAVEL PACING CHART ──────────────────────────────
+let yoyChartInst = null;
+function renderYOYChart(d) {
+  const ctx = document.getElementById('yoyChart');
+  if (!ctx) return;
+
+  // 2025 cumulative pacing by weeks-before-event (sourced from ATC Traveler Details export)
+  const weeks2025 = [20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+  const weekly2025 = {20:2,19:2,18:0,17:5,16:11,15:4,14:8,13:9,12:15,11:24,10:14,9:29,8:25,7:17,6:7,5:9,4:0,3:7,2:3,1:1};
+  let cum = 0;
+  const cumulative2025 = weeks2025.map(w => { cum += (weekly2025[w] || 0); return cum; });
+  const labels = weeks2025.map(w => `${w}w`);
+
+  const datasets = [
+    {
+      label: '2025 Actual (Tampa) — 192 total',
+      data: cumulative2025,
+      borderColor: '#4A6080',
+      backgroundColor: 'rgba(74,96,128,0.06)',
+      borderDash: [5, 4],
+      tension: 0.3,
+      pointRadius: 3,
+      pointBackgroundColor: '#4A6080',
+      fill: true,
+      borderWidth: 1.5,
+    }
+  ];
+
+  // If 2026 ATC data is uploaded, overlay it
+  if (d.travelWeeks && d.travelWeeklyTotals && d.travelWeeks.length > 0) {
+    const len = d.travelWeeks.length;
+    const mapped2026 = Array(weeks2025.length).fill(null);
+    let runningTotal = 0;
+    d.travelWeeklyTotals.forEach((val, i) => {
+      runningTotal += val;
+      const idx = weeks2025.length - len + i;
+      if (idx >= 0 && idx < weeks2025.length) mapped2026[idx] = runningTotal;
+    });
+    datasets.push({
+      label: '2026 Live (Vancouver)',
+      data: mapped2026,
+      borderColor: '#2B5EAC',
+      backgroundColor: 'rgba(43,94,172,0.10)',
+      tension: 0.3,
+      pointRadius: 4,
+      pointBackgroundColor: '#2B5EAC',
+      fill: true,
+      borderWidth: 2,
+    });
+    document.getElementById('yoy-2026-row').style.display = 'block';
+  }
+
+  if (yoyChartInst) yoyChartInst.destroy();
+  yoyChartInst = new Chart(ctx.getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family: 'DM Sans', size: 11 }, color: '#4A6080', boxWidth: 14 } },
+        tooltip: { callbacks: {
+          title: (items) => `${items[0].label} before event`,
+          label: (ctx) => ` ${ctx.dataset.label}: ${ctx.parsed.y !== null ? ctx.parsed.y : '—'} travelers`
+        }}
+      },
+      scales: {
+        x: {
+          reverse: true,
+          ticks: { font: { family: 'DM Sans', size: 10 }, color: '#4A6080', maxRotation: 0 },
+          grid: { color: '#D4E0F0' },
+          title: { display: true, text: '← weeks before event', font: { family: 'DM Sans', size: 10 }, color: '#4A6080' }
+        },
+        y: {
+          ticks: { font: { family: 'DM Sans', size: 11 }, color: '#4A6080' },
+          grid: { color: '#D4E0F0' },
+          beginAtZero: true,
+          title: { display: true, text: 'Cumulative bookings', font: { family: 'DM Sans', size: 10 }, color: '#4A6080' }
+        }
+      }
+    }
+  });
+}
+
+// ─── FORM PACING CHART (2025 baseline) ───────────────────
+let formPacingChartInst = null;
+function renderFormPacingChart(travelData) {
+  const ctx = document.getElementById('formPacingChart');
+  if (!ctx) return;
+
+  // Ascending: 20w out → 1w out (left = furthest from event, right = closest)
+  const weeks = [20,19,18,17,16,15,14,13,12,11,10,9,8,7,6,5,4,3,2,1];
+  const labels = weeks.map(w => `${w}w`);
+
+  // 2025 cumulative FORM submissions
+  const weeklyForms = {20:1,19:0,18:6,17:0,16:5,15:3,14:5,13:6,12:9,11:13,10:10,9:15,8:13,7:7,6:6,5:6,4:0,3:3,2:3,1:1};
+  let cumF = 0;
+  const cumForms2025 = weeks.map(w => { cumF += (weeklyForms[w]||0); return cumF; });
+
+  // 2025 cumulative ATC FLIGHTS BOOKED
+  const weeklyBookings = {20:2,19:2,18:0,17:5,16:11,15:4,14:8,13:9,12:15,11:24,10:14,9:29,8:25,7:17,6:7,5:9,4:0,3:7,2:3,1:1};
+  let cumB = 0;
+  const cumBookings2025 = weeks.map(w => { cumB += (weeklyBookings[w]||0); return cumB; });
+
+  const datasets = [
+    {
+      label: '2025 Forms submitted (112)',
+      data: cumForms2025,
+      borderColor: '#4A6080',
+      backgroundColor: 'rgba(74,96,128,0.07)',
+      borderDash: [5,4],
+      tension: 0.3, pointRadius: 2.5, pointBackgroundColor: '#4A6080', fill: true, borderWidth: 1.5,
+    },
+    {
+      label: '2025 Flights booked (192)',
+      data: cumBookings2025,
+      borderColor: '#38b8a0',
+      backgroundColor: 'rgba(56,184,160,0.07)',
+      borderDash: [3,3],
+      tension: 0.3, pointRadius: 2.5, pointBackgroundColor: '#38b8a0', fill: true, borderWidth: 1.5,
+    }
+  ];
+
+  // 2026 live ATC overlay when uploaded
+  if (travelData && travelData.travelWeeks && travelData.travelWeeks.length > 0) {
+    const len = travelData.travelWeeks.length;
+    const mapped = Array(weeks.length).fill(null);
+    let running = 0;
+    travelData.travelWeeklyTotals.forEach((val, i) => {
+      running += val;
+      const idx = weeks.length - len + i;
+      if (idx >= 0) mapped[idx] = running;
+    });
+    datasets.push({
+      label: '2026 Flights live',
+      data: mapped,
+      borderColor: '#2B5EAC',
+      backgroundColor: 'rgba(43,94,172,0.10)',
+      tension: 0.3, pointRadius: 3, pointBackgroundColor: '#2B5EAC', fill: true, borderWidth: 2,
+    });
+  }
+
+  if (formPacingChartInst) formPacingChartInst.destroy();
+  formPacingChartInst = new Chart(ctx.getContext('2d'), {
+    type: 'line',
+    data: { labels, datasets },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family: 'DM Sans', size: 10 }, color: '#4A6080', boxWidth: 12 } },
+        tooltip: { callbacks: {
+          title: i => `${i[0].label} before event`,
+          label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y ?? '—'}`
+        }}
+      },
+      scales: {
+        x: {
+          ticks: { font: { family: 'DM Sans', size: 9 }, color: '#4A6080', maxRotation: 0 },
+          grid: { color: '#D4E0F0' },
+          title: { display: true, text: '← further out · closer to event →', font: { family: 'DM Sans', size: 9 }, color: '#4A6080' }
+        },
+        y: { beginAtZero: true, ticks: { font: { family: 'DM Sans', size: 10 }, color: '#4A6080' }, grid: { color: '#D4E0F0' } }
+      }
+    }
+  });
+}
+
+// ─── FLIGHT COST STATE + HANDLERS ────────────────────────
+const flightCostState = { entries: [] };
+
+function handleFlightCostUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  Papa.parse(file, {
+    header: true, skipEmptyLines: true,
+    complete: (results) => {
+      flightCostState.entries = results.data
+        .filter(r => r.week && r.total_cost)
+        .map(r => ({ week: r.week.trim(), tickets: parseInt(r.tickets||0), cost: parseFloat(r.total_cost) }));
+      updateFlightCostUI();
+    }
+  });
+}
+
+function addFlightCostEntry() {
+  const week = document.getElementById('fc-week').value.trim();
+  const tickets = parseInt(document.getElementById('fc-tickets').value)||0;
+  const cost = parseFloat(document.getElementById('fc-cost').value)||0;
+  if (!week || cost <= 0) return;
+  const idx = flightCostState.entries.findIndex(e => e.week === week);
+  if (idx >= 0) flightCostState.entries[idx] = { week, tickets, cost };
+  else flightCostState.entries.push({ week, tickets, cost });
+  document.getElementById('fc-week').value = '';
+  document.getElementById('fc-tickets').value = '';
+  document.getElementById('fc-cost').value = '';
+  updateFlightCostUI();
+}
+
+function clearFlightCosts() {
+  if (!confirm('Clear all 2026 flight cost entries?')) return;
+  flightCostState.entries = [];
+  updateFlightCostUI();
+}
+
+function updateFlightCostUI() {
+  const entries = flightCostState.entries;
+  const totalCost = entries.reduce((s,e) => s+e.cost, 0);
+  const totalTickets = entries.reduce((s,e) => s+e.tickets, 0);
+  const avg = totalTickets > 0 ? totalCost/totalTickets : 0;
+
+  document.getElementById('cost2026-stat').textContent = '$' + fmt(totalCost);
+  document.getElementById('cost2026-sub').textContent = `${totalTickets} ticket${totalTickets!==1?'s':''} booked`;
+  document.getElementById('costAvg-stat').textContent = avg > 0 ? '$' + Math.round(avg).toLocaleString() : '—';
+
+  if (entries.length > 0) {
+    document.getElementById('flight-cost-log-wrap').style.display = 'block';
+    document.getElementById('flight-cost-empty').style.display = 'none';
+    let cum = 0;
+    document.getElementById('flight-cost-log-body').innerHTML = entries.map(e => {
+      cum += e.cost;
+      const rowAvg = e.tickets > 0 ? Math.round(e.cost/e.tickets) : 0;
+      return `<tr>
+        <td style="font-weight:500">${e.week}</td>
+        <td style="text-align:right">${e.tickets}</td>
+        <td style="text-align:right;font-weight:600;color:var(--blue-dark)">$${fmt(e.cost)}</td>
+        <td style="text-align:right;color:var(--text-secondary)">${rowAvg > 0 ? '$'+rowAvg.toLocaleString() : '—'}</td>
+        <td style="text-align:right;color:var(--text-secondary)">$${fmt(cum)}</td>
+      </tr>`;
+    }).join('') + `<tr style="background:var(--blue-pale)">
+      <td style="font-weight:700">Total</td>
+      <td style="text-align:right;font-weight:700">${totalTickets}</td>
+      <td style="text-align:right;font-weight:700;color:var(--blue-dark)">$${fmt(totalCost)}</td>
+      <td style="text-align:right;font-weight:700;color:var(--blue-dark)">${avg>0?'$'+Math.round(avg).toLocaleString():'—'}</td>
+      <td style="text-align:right;font-weight:700;color:var(--blue-dark)">$${fmt(totalCost)}</td>
+    </tr>`;
+  } else {
+    document.getElementById('flight-cost-log-wrap').style.display = 'none';
+    document.getElementById('flight-cost-empty').style.display = 'flex';
+  }
+  renderFlightCostChart();
+}
+
+// ─── FLIGHT COST CHART ────────────────────────────────────
+let flightCostChartInst = null;
+function renderFlightCostChart() {
+  const ctx = document.getElementById('flightCostChart');
+  if (!ctx) return;
+  const entries = flightCostState.entries;
+  if (entries.length === 0) {
+    if (flightCostChartInst) { flightCostChartInst.destroy(); flightCostChartInst = null; }
+    return;
+  }
+  document.getElementById('flight-cost-empty').style.display = 'none';
+  let cum = 0;
+  const labels = entries.map(e => e.week);
+  const cumCosts = entries.map(e => { cum += e.cost; return cum; });
+  const weeklyCosts = entries.map(e => e.cost);
+
+  if (flightCostChartInst) flightCostChartInst.destroy();
+  flightCostChartInst = new Chart(ctx.getContext('2d'), {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [
+        { type:'line', label:'Cumulative spend', data:cumCosts, borderColor:'#1A3F7A', backgroundColor:'transparent', tension:0.3, pointRadius:4, pointBackgroundColor:'#1A3F7A', borderWidth:2, yAxisID:'y1' },
+        { type:'bar',  label:'Weekly cost',      data:weeklyCosts, backgroundColor:'rgba(43,94,172,0.25)', borderColor:'#2B5EAC', borderWidth:1, borderRadius:4, yAxisID:'y' }
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { font: { family:'DM Sans', size:10 }, color:'#4A6080', boxWidth:12 } },
+        tooltip: { callbacks: { label: ctx => ` ${ctx.dataset.label}: $${ctx.parsed.y.toLocaleString()}` } }
+      },
+      scales: {
+        x: { ticks: { font:{family:'DM Sans',size:10}, color:'#4A6080' }, grid:{ color:'#D4E0F0' } },
+        y:  { beginAtZero:true, position:'left',  ticks:{ callback: v=>'$'+(v/1000).toFixed(0)+'k', font:{family:'DM Sans',size:10}, color:'#4A6080' }, grid:{color:'#D4E0F0'}, title:{display:true,text:'Weekly',font:{size:9},color:'#4A6080'} },
+        y1: { beginAtZero:true, position:'right', ticks:{ callback: v=>'$'+(v/1000).toFixed(0)+'k', font:{family:'DM Sans',size:10}, color:'#1A3F7A' }, grid:{drawOnChartArea:false}, title:{display:true,text:'Cumulative',font:{size:9},color:'#1A3F7A'} }
+      }
+    }
+  });
+}
+function renderRegTable(d) {
+  if (!d.regByType) return;
+  const wrap = document.getElementById('reg-table-wrap');
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Type</th><th>Count</th><th>Revenue</th><th>Goal</th><th>%</th></tr></thead>
+      <tbody>
+        ${d.regByType.map(r => {
+          const pct = r.goal ? Math.round(r.count / r.goal * 100) : '—';
+          return `<tr>
+            <td>${r.type}</td>
+            <td>${r.count.toLocaleString()}</td>
+            <td>$${fmt(r.revenue)}</td>
+            <td>${r.goal}</td>
+            <td><span style="font-weight:600;color:${pct >= 80 ? 'var(--flag-green)' : pct >= 50 ? 'var(--flag-amber)' : 'var(--flag-red)'}">${pct}%</span></td>
+          </tr>`;
+        }).join('')}
+        <tr style="background:var(--bg)">
+          <td style="font-weight:600">Total</td>
+          <td style="font-weight:600">${d.regTotal.toLocaleString()}</td>
+          <td style="font-weight:600">$${fmt(d.regRevenue)}</td>
+          <td style="font-weight:600">${d.regGoal}</td>
+          <td style="font-weight:600;color:var(--blue-dark)">${Math.round(d.regTotal/d.regGoal*100)}%</td>
+        </tr>
+      </tbody>
+    </table>`;
+}
+
+// ─── HOUSING TABLE ────────────────────────────────────────
+function renderHousingTable(d) {
+  if (!d.housingByHotel) return;
+  const wrap = document.getElementById('housing-table-wrap');
+  const travelPct = d.travelTotal && d.regTotal ? Math.round(d.travelTotal / d.regTotal * 100) : null;
+
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Hotel</th><th>Pickup</th><th>Blocked</th><th>%</th><th>Risk</th></tr></thead>
+      <tbody>
+        ${d.housingByHotel.map(h => {
+          const pct = Math.round(h.picked / h.blocked * 100);
+          const riskColor = h.risk === 'high' ? 'var(--flag-red)' : h.risk === 'medium' ? 'var(--flag-amber)' : 'var(--flag-green)';
+          return `<tr>
+            <td>${h.hotel}</td>
+            <td>${h.picked}</td>
+            <td>${h.blocked}</td>
+            <td><span style="font-weight:600;color:${pct >= 70 ? 'var(--flag-green)' : pct >= 50 ? 'var(--flag-amber)' : 'var(--flag-red)'}">${pct}%</span></td>
+            <td><span style="font-size:11px;font-weight:600;color:${riskColor};text-transform:uppercase;letter-spacing:.5px">${h.risk}</span></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    ${travelPct !== null ? `<div style="padding:12px 18px;font-size:12px;color:var(--text-secondary);border-top:1px solid var(--border)">✈ Travel: <strong style="color:var(--text-primary)">${d.travelTotal}</strong> bookings confirmed (${travelPct}% of registered) · <strong>${d.travelTransfers}</strong> transfers arranged</div>` : ''}
+  `;
+}
+
+// ─── REVENUE TABLE ────────────────────────────────────────
+function renderRevenueTable(d) {
+  const wrap = document.getElementById('revenue-table-wrap');
+  const levelColor = { Engage: '#1A3F7A', Excel: '#2B5EAC', Explore: '#85165A', Experience: '#38b8a0' };
+
+  const wonRows = [...d.sfClosedWon].sort((a,b) => b.amount - a.amount).map(r => `<tr>
+    <td style="font-weight:500;font-size:12px">${r.name}</td>
+    <td><span style="font-size:10px;font-weight:700;color:${levelColor[r.level]||'#333'};background:${levelColor[r.level]||'#eee'}18;padding:2px 8px;border-radius:8px">${r.level}</span></td>
+    <td>$${r.amount.toLocaleString()}</td>
+    <td><span style="font-size:11px;font-weight:600;color:var(--flag-green)">CLOSED WON</span></td>
+  </tr>`).join('');
+
+  const pipeRows = d.sfPipeline.map(r => {
+    const overdue = new Date(r.closeDate) < new Date('2026-03-10');
+    return `<tr style="${overdue ? 'background:#FFF8F0' : ''}">
+    <td style="font-weight:500;font-size:12px">${r.name} ${overdue ? '<span style="font-size:10px;color:var(--flag-red);font-weight:600">⚠ OVERDUE</span>' : ''}</td>
+    <td><span style="font-size:10px;font-weight:700;color:${levelColor[r.level]||'#333'};background:${levelColor[r.level]||'#eee'}18;padding:2px 8px;border-radius:8px">${r.level}</span></td>
+    <td>$${r.amount.toLocaleString()}</td>
+    <td><span style="font-size:11px;font-weight:600;color:var(--flag-amber)">BUYING DECISION</span></td>
+  </tr>`;}).join('');
+
+  wrap.innerHTML = `
+    <table>
+      <thead><tr><th>Partner</th><th>Level</th><th>Amount</th><th>Stage</th></tr></thead>
+      <tbody>
+        <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-green);padding:8px 18px">✓ Closed Won — ${d.sfClosedWon.length} Partners</td></tr>
+        ${wonRows}
+        <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-amber);padding:8px 18px">◎ Pipeline (Buying Decision) — ${d.sfPipeline.length} Partners</td></tr>
+        ${pipeRows}
+        <tr style="background:var(--neutral-light)">
+          <td style="font-weight:700" colspan="2">Total Confirmed</td>
+          <td style="font-weight:700;color:var(--blue-dark)">$${d.revenueConfirmed.toLocaleString()}</td>
+          <td style="font-size:11px;color:var(--text-secondary)">+$${d.revenuePending.toLocaleString()} pipeline</td>
+        </tr>
+      </tbody>
+    </table>`;
+}
+
+// ─── INSIGHTS ─────────────────────────────────────────────
+function renderInsights(d) {
+  const insights = [];
+
+  if (d.regWoW > 0) insights.push(`Registration added <strong>${d.regWoW} attendees</strong> this week — ${d.regWoW > 30 ? 'strong momentum' : 'steady pace'}. ${d.regTotal && d.regGoal ? `${Math.round(d.regTotal/d.regGoal*100)}% of goal reached.` : ''}`);
+
+  if (d.housingWoW > 0 && d.housingBlocked) {
+    const pct = Math.round(d.housingTotal / d.housingBlocked * 100);
+    insights.push(`Housing pickup at <strong>${pct}%</strong> of block. +${d.housingWoW} rooms added this week.`);
+  }
+
+  if (d.regTotal && d.travelTotal) {
+    const gap = d.regTotal - d.travelTotal;
+    const pct = Math.round(gap / d.regTotal * 100);
+    if (pct <= 10) insights.push(`Travel booking rate is strong — only <strong>${gap} registrants</strong> (${pct}%) haven't booked travel yet.`);
+    else insights.push(`<strong>${gap} registrants</strong> (${pct}%) haven't booked travel. Consider a targeted email nudge.`);
+  }
+
+  if (d.revenueConfirmed) {
+    const remaining = d.revenuePending;
+    const overdueCount = d.overduePipeline ? d.overduePipeline.length : 0;
+    insights.push(`Partnership revenue: <strong>$${fmt(d.revenueConfirmed)} confirmed</strong> across ${d.sfClosedWon.length} partners. $${fmt(remaining)} pipeline to close.${overdueCount > 0 ? ` <strong style="color:var(--teal)">${overdueCount} overdue</strong> — needs immediate follow-up.` : ''}`);
+  }
+
+  if (d.housingByHotel) {
+    const lowest = d.housingByHotel.sort((a,b) => (a.picked/a.blocked) - (b.picked/b.blocked))[0];
+    if (lowest) insights.push(`<strong>${lowest.hotel}</strong> has the lowest pickup rate — prioritize housing outreach to that property's attendees.`);
+  }
+
+  const card = document.getElementById('insightsCard');
+  card.innerHTML = `<h3>✦ Auto Insights</h3>` + (insights.length ? insights.map(i => `<div class="insight-item"><span class="insight-dot">›</span><span>${i}</span></div>`).join('') : '<div class="insight-item"><span class="insight-dot">›</span><span>No insights yet. Load data to generate.</span></div>');
+}
+
+// ─── HEADER META ──────────────────────────────────────────
+function updateHeaderMeta(d) {
+  if (d.latestWk) document.getElementById('weekBadge').textContent = `Reporting: ${d.latestWk}`;
+  else document.getElementById('weekBadge').textContent = `Week of March 9, 2026`;
+  document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`;
+}
+
+// ─── SPONSOR MASTER DATA ─────────────────────────────────
+const SPONSOR_MASTER_RAW = [
+  // ── CLOSED WON · HAS FORM ──
+  { name:"Ottawa Tourism",                                    status:"Salesforce: CLOSED WON", alpha:"OTT",  logo:"x", revenue:"$25,000", contact:"Glenn Duncan",    title:"Executive VP/CMO",                  email:"gduncan@ottawatourism.ca",          email2:"sseguin@ottawatourism.ca",              form:"X", formDate:"1/22/2026", formInitials:"GD",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Milwaukee",                                   status:"Salesforce: CLOSED WON", alpha:"MIL",  logo:"x", revenue:"$25,000", contact:"Leslie Johnson",   title:"VP Sales & Event Experiences",      email:"ljohnson@milwaukee.org",            email2:"slibby@milwaukee.org",                 form:"X", formDate:"1/23/2026", formInitials:"LJ",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit San Antonio",                                 status:"Salesforce: CLOSED WON", alpha:"SANA", logo:"x", revenue:"$25,000", contact:"Tyler Orwig",      title:"SVP of Sales",                      email:"tylerorwig@visitsanantonio.com",    email2:"Cat.Tijerina@visitsanantonio.com",      form:"X", formDate:"1/23/2026", formInitials:"TSO", formRep:"same as above",       registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"IHG Hotels & Resorts",                              status:"Salesforce: CLOSED WON", alpha:"IHG",  logo:"x", revenue:"$25,000", contact:"Cecilia Bell",     title:"Senior Account Director, Global Sales", email:"cecilia.bell@ihg.com",          email2:"",                                     form:"X", formDate:"1/30/2026", formInitials:"CFB", formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Atlanta Convention and Visitors Bureau",            status:"Salesforce: CLOSED WON", alpha:"ATL",  logo:"x", revenue:"$50,000", contact:"Charlene Lopez",   title:"EVP & CSO",                         email:"clopez@discoveratlanta.com",        email2:"kluangamath@discoveratlanta.com",       form:"X", formDate:"3/2/2026",  formInitials:"CL",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:true },
+  { name:"Hilton",                                            status:"Salesforce: CLOSED WON", alpha:"HIL",  logo:"x", revenue:"$25,000", contact:"Joni Opperman",    title:"Asst Managing Director",            email:"joni.opperman@hilton.com",          email2:"Ashley.Galvan@hilton.com",             form:"X", formDate:"3/4/2026",  formInitials:"JO",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", formDuplicate:true },
+  { name:"Visit Greater Palm Springs",                        status:"Salesforce: CLOSED WON", alpha:"PAL",  logo:"x", revenue:"$25,000", contact:"Will Trokey",      title:"National Accounts Director",        email:"will@visitgreaterps.com",           email2:"merve@visitgreaterps.com",             form:"X", formDate:"3/6/2026",  formInitials:"WET", formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  // ── CLOSED WON · NO FORM YET ──
+  { name:"Visit Anaheim",                                     status:"Salesforce: CLOSED WON", alpha:"ANA",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Austin",                                      status:"Salesforce: CLOSED WON", alpha:"AUS",  logo:"x", revenue:"$25,000", contact:"Steve Genovesi",   title:"",                                  email:"sgenovesi@visitaustin.org",         email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Caesars Entertainment",                             status:"Salesforce: CLOSED WON", alpha:"CAE",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Encore",                                            status:"Salesforce: CLOSED WON", alpha:"ENC",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Fort Worth",                                  status:"Salesforce: CLOSED WON", alpha:"FOR",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Indy",                                        status:"Salesforce: CLOSED WON", alpha:"IND",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit KC",                                          status:"Salesforce: CLOSED WON", alpha:"KAN",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Long Beach Convention & Visitors Bureau",           status:"Salesforce: CLOSED WON", alpha:"LON",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Business Events Montreal",                          status:"Salesforce: CLOSED WON", alpha:"MON",  logo:"",  revenue:"$25,000", contact:"Mylène Gagnon",    title:"",                                  email:"mgagnon@mtl.org",                  email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"New Orleans & Company",                             status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"",  revenue:"$25,000", contact:"Stephanie Turner", title:"",                                  email:"sturner@neworleans.com",            email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"",  revenue:"$25,000", contact:"Elaine Williams",  title:"",                                  email:"ewilliams@mccno.com",               email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Visit Orlando (confirm: Visit or Convention Center?)", status:"Salesforce: CLOSED WON", alpha:"ORL", logo:"", revenue:"$25,000", contact:"",               title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:false },
+  { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Tampa Bay",                                   status:"Salesforce: CLOSED WON", alpha:"TAM",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Destination Toronto",                               status:"Salesforce: CLOSED WON", alpha:"TOR",  logo:"",  revenue:"$25,000", contact:"Heather Neale",    title:"",                                  email:"hneale@destinationtoronto.com",     email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  // ── PIPELINE · HAS FORM ──
+  { name:"Experience Columbus",                               status:"In Pipeline",            alpha:"COL",  logo:"",  revenue:"$25,000", contact:"Bill Adams",        title:"Chief Sales Officer",               email:"badams@experiencecolumbus.com",     email2:"cneal@experiencecolumbus.com",          form:"X", formDate:"1/22/2026", formInitials:"WA",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Visit Seattle",                                     status:"Not in SF · Has Form",   alpha:"SEA",  logo:"",  revenue:"$25,000", contact:"Kelly Saling",      title:"SVP & CSO",                         email:"ksaling@visitseattle.org",          email2:"lpeterson@visitseattle.org",            form:"X", formDate:"1/27/2026", formInitials:"KLS", formRep:"TBD",                 registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Marriott International",                            status:"In Pipeline",            alpha:"MAR",  logo:"",  revenue:"$25,000", contact:"Maureen Selke",     title:"Senior Director Global Sales",      email:"maureen.selke@marriott.com",        email2:"",                                     form:"X", formDate:"1/27/2026", formInitials:"ms",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Events DC",                                         status:"In Pipeline",            alpha:"DC",   logo:"",  revenue:"$25,000", contact:"Stacey Knoppel",    title:"",                                  email:"sknoppel@eventsdc.com",             email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  // ── NOT IN SF · HAS FORM ──
+  { name:"Houston First Corporation",                         status:"Not in SF · Has Form",   alpha:"HOU",  logo:"",  revenue:"$25,000", contact:"Nathan Tollett",    title:"SVP Sales & Client Services",       email:"ntollett@visithouston.com",         email2:"kgutierrez@visithouston.com",           form:"X", formDate:"1/29/2026", formInitials:"NT",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Visit Baltimore",                                   status:"Not in SF · Has Form",   alpha:"BAL",  logo:"",  revenue:"$25,000", contact:"Lindsay Ruocco",    title:"Director of Events & Tradeshows",   email:"lruocco@baltimore.org",             email2:"awelsh@baltimore.org",                 form:"X", formDate:"1/30/2026", formInitials:"LR",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Philadelphia Convention & Visitors Bureau",         status:"Not in SF · Has Form",   alpha:"PHIL", logo:"x", revenue:"$25,000", contact:"Maria Grasso",      title:"Chief Sales Officer",               email:"maria@discoverphl.com",             email2:"Devon Kelly devon@discoverphl.com",     form:"X", formDate:"1/22/2026", formInitials:"MG",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  // ── NEEDS CLARIFICATION ──
+  { name:"Georgia Convention Center",                         status:"⚠ Clarify — possible dup of Atlanta CVB", alpha:"GEO", logo:"", revenue:"", contact:"Charlene Lopez", title:"EVP & CSO (same as Atlanta CVB)", email:"clopez@discoveratlanta.com", email2:"kluangamath@discoveratlanta.com", form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", needsClarification:true },
+  // ── HOST CITY ──
+  { name:"Destination Vancouver (confirm name)",              status:"Host City",              alpha:"VAN",  logo:"",  revenue:"$0",      contact:"",                  title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+];
+
+let sponsorData = SPONSOR_MASTER_RAW;
+
+function getSponsorFlags(s) {
+  const flags = [];
+  const st = s.status.toLowerCase();
+  const isClosed = st.includes('closed won');
+  const isPipeline = st.includes('pipeline');
+  const isNotSF = st.includes('not in sf') || st.includes('has form');
+  const isHost = st.includes('host city');
+  const isClarify = st.includes('clarify');
+  const nameConfirm = s.name.toLowerCase().includes('confirm');
+
+  if (s.needsClarification || isClarify) flags.push({ type:'clarify', label:'Needs clarification', color:'var(--flag-red)' });
+  if (s.formDuplicate) flags.push({ type:'dup', label:'Duplicate form submission', color:'var(--flag-amber)' });
+  if (nameConfirm) flags.push({ type:'confirmname', label:'Confirm name', color:'var(--flag-amber)' });
+  if (isNotSF && !isHost && !isClarify) flags.push({ type:'notsf', label:'Not in SF', color:'var(--flag-red)' });
+  if (!s.logo && !isHost && !isClarify) flags.push({ type:'nologo', label:'No logo', color:'var(--flag-amber)' });
+  if (!s.contact && !isHost && !isClarify) flags.push({ type:'nocontact', label:'No contact', color:'var(--flag-red)' });
+  if (!s.email && !isHost && !isClarify) flags.push({ type:'nocontact', label:'No email', color:'var(--flag-red)' });
+  if (!s.form && (isClosed || isPipeline)) flags.push({ type:'noform', label:'No commitment form', color:'var(--flag-amber)' });
+  if (isClosed && !s.msoe) flags.push({ type:'nomsoe', label:'Not added to MSOE', color:'var(--flag-amber)' });
+  if (isPipeline && !isNotSF) flags.push({ type:'pipeline', label:'Pipeline — not closed', color:'#7B4F9E' });
+  return flags;
+}
+
+function getStatusBadge(status) {
+  const st = status.toLowerCase();
+  if (st.includes('closed won')) return `<span style="font-size:10px;font-weight:700;color:var(--flag-green);background:#f0faf5;padding:2px 7px;border-radius:6px;white-space:nowrap">✓ Closed Won</span>`;
+  if (st.includes('not in sf') && st.includes('has form')) return `<span style="font-size:10px;font-weight:700;color:var(--flag-red);background:#fef2f2;padding:2px 7px;border-radius:6px;white-space:nowrap">🚨 Not in SF · Has Form</span>`;
+  if (st.includes('pipeline')) return `<span style="font-size:10px;font-weight:700;color:#7B4F9E;background:#f5f0fa;padding:2px 7px;border-radius:6px;white-space:nowrap">◎ Pipeline</span>`;
+  if (st.includes('clarify')) return `<span style="font-size:10px;font-weight:700;color:var(--flag-red);background:#fef2f2;padding:2px 7px;border-radius:6px;white-space:nowrap">⚠ Needs Clarification</span>`;
+  if (st.includes('host city')) return `<span style="font-size:10px;font-weight:700;color:var(--teal-dark);background:#f0fdfb;padding:2px 7px;border-radius:6px;white-space:nowrap">★ Host City</span>`;
+  if (!status.trim()) return `<span style="font-size:10px;color:var(--text-secondary)">—</span>`;
+  return `<span style="font-size:10px;color:var(--text-secondary)">${status}</span>`;
+}
+
+function chk(val, emptyMsg) {
+  if (val && val.trim().toLowerCase() === 'x') return `<span style="color:var(--flag-green);font-size:14px;text-align:center;display:block">✓</span>`;
+  if (val && val.trim()) return `<span style="color:var(--flag-green);font-size:14px;text-align:center;display:block">✓</span>`;
+  return `<span style="color:var(--neutral-mid);font-size:13px;text-align:center;display:block" title="${emptyMsg}">○</span>`;
+}
+
+function hasEmail(s) { return s.email && s.email.trim(); }
+function hasContact(s) { return s.contact && s.contact.trim(); }
+
+function renderSponsorTable(data) {
+  const tbody = document.getElementById('sponsor-table-body');
+  if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;padding:24px;color:var(--text-secondary)">No sponsors match this filter.</td></tr>'; return; }
+
+  tbody.innerHTML = data.map(s => {
+    const flags = getSponsorFlags(s);
+    const hasFlags = flags.length > 0;
+    const isClarify = s.needsClarification || s.status.toLowerCase().includes('clarify');
+    const isDup = s.formDuplicate;
+    let rowStyle = '';
+    if (isClarify) rowStyle = 'background:#FFF0F0;';
+    else if (isDup) rowStyle = 'background:#FFFBF0;';
+    else if (hasFlags) rowStyle = 'background:#FEFBFA;';
+
+    const contactDisplay = s.contact
+      ? `<span style="font-size:11px;font-weight:500">${s.contact}</span>${s.title ? `<br><span style="font-size:10px;color:var(--text-secondary)">${s.title}</span>` : ''}${s.email ? `<br><a href="mailto:${s.email}" style="color:var(--blue-mid);font-size:10px">${s.email}</a>` : ''}${s.email2 && s.email2 !== 'n/a' ? `<br><span style="font-size:10px;color:var(--text-secondary)">${s.email2}</span>` : ''}`
+      : `<span style="font-size:11px;color:var(--flag-red)">—</span>`;
+
+    const formCell = s.form
+      ? `<span style="color:var(--flag-green);font-size:14px;display:block;text-align:center" title="Submitted ${s.formDate}">✓</span>${s.formDate ? `<div style="font-size:9px;color:var(--text-secondary);text-align:center">${s.formDate}</div>` : ''}${isDup ? `<div style="font-size:9px;color:var(--flag-amber);text-align:center;font-weight:600">⚠ dup</div>` : ''}`
+      : `<span style="color:var(--neutral-mid);font-size:13px;display:block;text-align:center">○</span>`;
+
+    const actionItems = flags.map(f =>
+      `<span style="display:inline-block;font-size:10px;font-weight:600;color:${f.color};background:${f.color}18;padding:1px 6px;border-radius:4px;margin:1px 2px 1px 0;white-space:nowrap">${f.label}</span>`
+    ).join('');
+
+    return `<tr style="${rowStyle}">
+      <td style="font-weight:600;font-size:12px">${s.name}</td>
+      <td style="white-space:nowrap">${getStatusBadge(s.status)}</td>
+      <td style="font-size:12px;font-weight:600;color:${s.revenue && s.revenue !== '$0' && s.revenue.trim() ? 'var(--blue-dark)' : 'var(--text-secondary)'}">${s.revenue || '—'}</td>
+      <td style="text-align:center">${chk((!s.status.toLowerCase().includes('not in sf') && !s.status.toLowerCase().includes('clarify') && s.status.trim()) ? 'x' : '', 'Not in Salesforce')}</td>
+      <td style="text-align:center">${chk(s.logo, 'Logo not received')}</td>
+      <td style="font-size:11px;padding:8px 12px;min-width:160px">${contactDisplay}</td>
+      <td style="text-align:center;vertical-align:top;padding-top:10px">${formCell}</td>
+      <td style="text-align:center">${chk(s.registered, 'Not registered')}</td>
+      <td style="text-align:center">${chk(s.flight, 'No flight')}</td>
+      <td style="text-align:center">${chk(s.dineAround, 'Not selected')}</td>
+      <td style="text-align:center;font-size:11px;color:var(--text-secondary)">${s.msoe || '—'}</td>
+      <td style="font-size:11px;color:var(--text-secondary)">${s.liaison || '—'}</td>
+      <td>${actionItems || '<span style="font-size:11px;color:var(--flag-green)">✓ All clear</span>'}</td>
+    </tr>`;
+  }).join('');
+}
+
+function filterSponsorTable() {
+  const filter = document.getElementById('sponsor-filter').value;
+  let data = sponsorData;
+  if (filter === 'flags') data = data.filter(s => getSponsorFlags(s).length > 0);
+  else if (filter === 'closed') data = data.filter(s => s.status.toLowerCase().includes('closed won'));
+  else if (filter === 'pipeline') data = data.filter(s => s.status.toLowerCase().includes('pipeline'));
+  else if (filter === 'notsf') data = data.filter(s => s.status.toLowerCase().includes('not in sf'));
+  else if (filter === 'nologo') data = data.filter(s => !s.logo);
+  else if (filter === 'nocontact') data = data.filter(s => !s.contact || !s.email);
+  else if (filter === 'noform') data = data.filter(s => !s.form && (s.status.toLowerCase().includes('closed') || s.status.toLowerCase().includes('pipeline')));
+  else if (filter === 'confirmname') data = data.filter(s => s.name.toLowerCase().includes('confirm'));
+  renderSponsorTable(data);
+}
+
+function renderSponsorSummaryBadges(data) {
+  const noLogo = data.filter(s => !s.logo && !s.status.toLowerCase().includes('host')).length;
+  const noContact = data.filter(s => (!s.contact || !s.email) && !s.status.toLowerCase().includes('host')).length;
+  const noForm = data.filter(s => !s.form && (s.status.toLowerCase().includes('closed') || s.status.toLowerCase().includes('pipeline'))).length;
+  const notSF = data.filter(s => s.status.toLowerCase().includes('not in sf')).length;
+  const confirmName = data.filter(s => s.name.toLowerCase().includes('confirm')).length;
+
+  document.getElementById('sponsor-summary-badges').innerHTML = [
+    notSF > 0 ? `<span style="font-size:11px;font-weight:600;background:#fef2f2;color:var(--flag-red);padding:3px 10px;border-radius:10px">${notSF} not in SF</span>` : '',
+    noContact > 0 ? `<span style="font-size:11px;font-weight:600;background:#fef2f2;color:var(--flag-red);padding:3px 10px;border-radius:10px">${noContact} missing contact/email</span>` : '',
+    noLogo > 0 ? `<span style="font-size:11px;font-weight:600;background:#fff8f0;color:var(--flag-amber);padding:3px 10px;border-radius:10px">${noLogo} no logo</span>` : '',
+    noForm > 0 ? `<span style="font-size:11px;font-weight:600;background:#fff8f0;color:var(--flag-amber);padding:3px 10px;border-radius:10px">${noForm} no commit form</span>` : '',
+    confirmName > 0 ? `<span style="font-size:11px;font-weight:600;background:#fff8f0;color:var(--flag-amber);padding:3px 10px;border-radius:10px">${confirmName} confirm name</span>` : '',
+  ].join('');
+}
+
+function handleSponsorUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  Papa.parse(file, {
+    header: true,
+    skipEmptyLines: true,
+    complete: (results) => {
+      // Map CSV columns back to our internal keys
+      sponsorData = results.data.filter(r => r['Sponsor Name'] && r['Sponsor Name'].trim()).map(r => ({
+        name: r['Sponsor Name'] || '',
+        status: r['Status'] || '',
+        alpha: r['Alpha \nListing'] || '',
+        logo: r['Logo - Saved'] || '',
+        revenue: r['Revenue'] || '',
+        liaison: r['Sponsor \nLiaison'] || '',
+        notes: r['Sponsor Liaison Notes'] || '',
+        contact: r['Contact'] || '',
+        email: r['Email'] || '',
+        email2: r['Secdonary Email (Admin)'] || '',
+        form: r['Sponsor Form'] || '',
+        registered: r['Sponsor\n Registered'] || '',
+        regStatus: r['Registered Client Status'] || '',
+        flight: r['Sponsor Flight'] || '',
+        dineAround: r['Dine Around Selected'] || '',
+        msoe: r['added to MSOE'] || '',
+      }));
+      renderSponsorSummaryBadges(sponsorData);
+      renderSponsorTable(sponsorData);
+      // also add SF-level flags
+      refreshDashboard();
+    }
+  });
+}
+
+// init sponsor table on load
+window.addEventListener('DOMContentLoaded', () => {
+  renderSponsorSummaryBadges(sponsorData);
+  renderSponsorTable(sponsorData);
+  refreshDashboard();
+});
+</script>
+</body>
+</html>
