@@ -1909,5 +1909,406 @@ window.addEventListener('DOMContentLoaded', () => {
   refreshDashboard();
 });
 </script>
+
+<!-- ═══════════════════════════════════════════════════════
+     AI DASHBOARD ASSISTANT
+════════════════════════════════════════════════════════ -->
+<style>
+#chat-bubble {
+  position: fixed;
+  bottom: 28px;
+  right: 28px;
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue-dark), var(--blue-mid));
+  color: white;
+  border: none;
+  cursor: pointer;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(26,63,122,0.35);
+  z-index: 1000;
+  transition: transform .2s, box-shadow .2s;
+}
+#chat-bubble:hover { transform: scale(1.08); box-shadow: 0 6px 26px rgba(26,63,122,0.45); }
+#chat-bubble .chat-badge {
+  position: absolute;
+  top: -3px; right: -3px;
+  background: var(--teal-dark);
+  color: white;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 10px;
+  padding: 2px 5px;
+  font-family: 'DM Sans', sans-serif;
+  letter-spacing: .3px;
+}
+
+#chat-panel {
+  position: fixed;
+  bottom: 92px;
+  right: 28px;
+  width: 400px;
+  max-height: 560px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 40px rgba(26,63,122,0.18);
+  display: flex;
+  flex-direction: column;
+  z-index: 999;
+  overflow: hidden;
+  border: 1px solid var(--blue-border);
+  transform: scale(0.92) translateY(12px);
+  opacity: 0;
+  pointer-events: none;
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1), opacity .18s;
+}
+#chat-panel.open {
+  transform: scale(1) translateY(0);
+  opacity: 1;
+  pointer-events: all;
+}
+
+#chat-header {
+  background: linear-gradient(90deg, var(--blue-dark), var(--blue-mid));
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-shrink: 0;
+}
+#chat-header .avatar {
+  width: 32px; height: 32px;
+  background: rgba(255,255,255,0.18);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 15px;
+}
+#chat-header .title { color: white; font-weight: 700; font-size: 13px; }
+#chat-header .subtitle { color: rgba(255,255,255,0.7); font-size: 10px; margin-top: 1px; }
+#chat-close {
+  margin-left: auto;
+  background: none; border: none; color: rgba(255,255,255,0.7);
+  font-size: 18px; cursor: pointer; line-height: 1; padding: 2px 4px;
+  border-radius: 4px;
+}
+#chat-close:hover { color: white; background: rgba(255,255,255,0.1); }
+
+#chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-height: 0;
+}
+.chat-msg {
+  max-width: 88%;
+  padding: 9px 13px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  font-family: 'DM Sans', sans-serif;
+}
+.chat-msg.assistant {
+  background: var(--blue-pale);
+  color: var(--text-primary);
+  border-bottom-left-radius: 3px;
+  align-self: flex-start;
+}
+.chat-msg.user {
+  background: var(--blue-mid);
+  color: white;
+  border-bottom-right-radius: 3px;
+  align-self: flex-end;
+}
+.chat-msg.thinking {
+  background: var(--blue-pale);
+  color: var(--text-secondary);
+  align-self: flex-start;
+  font-style: italic;
+}
+.chat-msg ul { margin: 6px 0 0 0; padding-left: 16px; }
+.chat-msg li { margin-bottom: 3px; }
+.chat-msg strong { color: var(--blue-dark); }
+
+#chat-suggestions {
+  padding: 6px 12px 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex-shrink: 0;
+}
+.chat-suggestion {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 10.5px;
+  color: var(--blue-mid);
+  background: var(--blue-pale);
+  border: 1px solid var(--blue-border);
+  border-radius: 20px;
+  padding: 4px 10px;
+  cursor: pointer;
+  transition: background .15s;
+  white-space: nowrap;
+}
+.chat-suggestion:hover { background: #dceaf8; }
+
+#chat-input-row {
+  padding: 10px 12px 12px;
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: white;
+}
+#chat-input {
+  flex: 1;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 12.5px;
+  border: 1px solid var(--blue-border);
+  border-radius: 8px;
+  padding: 8px 11px;
+  color: var(--text-primary);
+  background: var(--bg);
+  outline: none;
+  resize: none;
+  min-height: 36px;
+  max-height: 90px;
+}
+#chat-input:focus { border-color: var(--blue-mid); background: white; }
+#chat-send {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 13px;
+  background: var(--blue-mid);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 8px 14px;
+  cursor: pointer;
+  font-weight: 600;
+  align-self: flex-end;
+  transition: background .15s;
+}
+#chat-send:hover { background: var(--blue-dark); }
+#chat-send:disabled { opacity: .5; cursor: default; }
+</style>
+
+<!-- Floating bubble -->
+<button id="chat-bubble" onclick="toggleChat()" title="Ask the dashboard assistant">
+  🤖
+  <span class="chat-badge">AI</span>
+</button>
+
+<!-- Chat panel -->
+<div id="chat-panel">
+  <div id="chat-header">
+    <div class="avatar">🤖</div>
+    <div>
+      <div class="title">Dashboard Assistant</div>
+      <div class="subtitle">Knows all your sponsor, revenue &amp; travel data</div>
+    </div>
+    <button id="chat-close" onclick="toggleChat()">✕</button>
+  </div>
+
+  <div id="chat-messages">
+    <div class="chat-msg assistant">
+      Hi! I have full access to your Partnership Summit dashboard data — sponsors, revenue, commitment forms, travel pacing, flags, and more.<br><br>Try asking me something! 👇
+    </div>
+  </div>
+
+  <div id="chat-suggestions">
+    <button class="chat-suggestion" onclick="sendSuggestion(this)">Who's missing a logo?</button>
+    <button class="chat-suggestion" onclick="sendSuggestion(this)">Which pipeline deals are overdue?</button>
+    <button class="chat-suggestion" onclick="sendSuggestion(this)">Who hasn't submitted a commitment form?</button>
+    <button class="chat-suggestion" onclick="sendSuggestion(this)">What's our revenue gap?</button>
+    <button class="chat-suggestion" onclick="sendSuggestion(this)">Summarize all current flags</button>
+  </div>
+
+  <div id="chat-input-row">
+    <textarea id="chat-input" placeholder="Ask anything about the dashboard data…" rows="1"
+      onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendChat()}"
+      oninput="this.style.height='auto';this.style.height=Math.min(this.scrollHeight,90)+'px'"></textarea>
+    <button id="chat-send" onclick="sendChat()">Send</button>
+  </div>
+</div>
+
+<script>
+// ─── CHAT TOGGLE ─────────────────────────────────────────
+function toggleChat() {
+  const panel = document.getElementById('chat-panel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open')) {
+    setTimeout(() => document.getElementById('chat-input').focus(), 220);
+  }
+}
+
+// ─── BUILD DATA SNAPSHOT FOR AI CONTEXT ──────────────────
+function buildDashboardContext() {
+  const goal = 1000000;
+  const confirmed = SF_CLOSED_WON.reduce((s,r)=>s+r.amount,0);
+  const pipeline  = SF_PIPELINE.reduce((s,r)=>s+r.amount,0);
+  const gap = goal - confirmed - pipeline;
+  const today = new Date();
+
+  const overdue = SF_PIPELINE.filter(r => new Date(r.closeDate) < today);
+
+  // Sponsor breakdowns from live sponsorData
+  const missingLogo    = sponsorData.filter(s => !s.logo || s.logo.trim() === '');
+  const missingContact = sponsorData.filter(s => !s.contact || s.contact.trim() === '');
+  const missingEmail   = sponsorData.filter(s => !s.email || s.email.trim() === '');
+  const missingForm    = sponsorData.filter(s => !s.formDate || s.formDate.trim() === '');
+  const notInSF        = sponsorData.filter(s => s.sfStatus === 'Not in SF' || (s.sfStatus||'').toLowerCase().includes('not in sf'));
+  const needsNameConf  = sponsorData.filter(s => (s.nameStatus||'').toLowerCase().includes('confirm'));
+  const duplicateFlags = sponsorData.filter(s => (s.notes||'').toLowerCase().includes('duplicate') || (s.notes||'').toLowerCase().includes('dup'));
+
+  const sponsorSummary = sponsorData.map(s => ({
+    name: s.org,
+    sfStatus: s.sfStatus,
+    level: s.level,
+    formDate: s.formDate || null,
+    contact: s.contact || null,
+    email: s.email || null,
+    hasLogo: !!(s.logo && s.logo.trim()),
+    nameConfirmed: !(s.nameStatus||'').toLowerCase().includes('confirm'),
+    notes: s.notes || null,
+  }));
+
+  return `
+You are an AI assistant embedded inside the PCMA Foundation Partnership Summit 2026 event planning dashboard. You have full access to the live data below. Answer questions concisely and helpfully, using bullet points where a list would be clearer. When listing names, use the exact org names from the data.
+
+TODAY'S DATE: ${today.toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}
+EVENT: PCMA Foundation Partnership Summit 2026 — Vancouver, BC — August 27–30, 2026
+WEEKS UNTIL EVENT: ~24 weeks
+
+─── REVENUE SUMMARY ───
+Goal: $1,000,000
+Confirmed (Closed Won): $${confirmed.toLocaleString()} — ${SF_CLOSED_WON.length} partners
+Pipeline (Buying Decision): $${pipeline.toLocaleString()} — ${SF_PIPELINE.length} partners
+Gap to goal: $${gap.toLocaleString()}
+Confirmed % of goal: ${Math.round(confirmed/goal*100)}%
+Confirmed + Pipeline % of goal: ${Math.round((confirmed+pipeline)/goal*100)}%
+
+─── OVERDUE PIPELINE DEALS (close date passed) ───
+${overdue.length === 0 ? 'None' : overdue.map(r=>`• ${r.name} — was due ${r.closeDate} ($${r.amount.toLocaleString()})`).join('\n')}
+
+─── CLOSED WON PARTNERS ───
+${SF_CLOSED_WON.map(r=>`• ${r.name} — $${r.amount.toLocaleString()} — ${r.level}`).join('\n')}
+
+─── PIPELINE PARTNERS ───
+${SF_PIPELINE.map(r=>`• ${r.name} — $${r.amount.toLocaleString()} — ${r.level} — close date: ${r.closeDate}`).join('\n')}
+
+─── SPONSOR TRACKER: ACTION ITEMS ───
+Missing logo (${missingLogo.length}): ${missingLogo.map(s=>s.org).join(', ') || 'none'}
+Missing contact (${missingContact.length}): ${missingContact.map(s=>s.org).join(', ') || 'none'}
+Missing email (${missingEmail.length}): ${missingEmail.map(s=>s.org).join(', ') || 'none'}
+No commitment form submitted (${missingForm.length}): ${missingForm.map(s=>s.org).join(', ') || 'none'}
+Not in Salesforce (${notInSF.length}): ${notInSF.map(s=>s.org).join(', ') || 'none'}
+Name needs confirmation (${needsNameConf.length}): ${needsNameConf.map(s=>s.org).join(', ') || 'none'}
+Possible duplicates/flags (${duplicateFlags.length}): ${duplicateFlags.map(s=>s.org).join(', ') || 'none'}
+
+─── ALL SPONSORS (${sponsorData.length} total) ───
+${JSON.stringify(sponsorSummary, null, 1)}
+
+─── TRAVEL PACING (2025 BASELINE — Tampa) ───
+Total travelers ticketed: 192
+Total flight request forms submitted: 112 (79 brought a guest)
+Peak booking window: weeks 9–8 before event (28 forms in 2 weeks)
+2026 status: ATC portal not yet open (24 weeks out)
+2026 form open status: Not yet open
+2025 milestone benchmarks:
+  • 20w out: 1 form / 4 booked  ← approximately now for 2026
+  • 16w out (≈ Apr 27 2026): 12 forms / 20 booked
+  • 12w out (≈ Jun 2 2026): 35 forms / 56 booked
+  • 8w out (≈ Jul 2 2026): 86 forms / 148 booked
+  • Final: 112 forms / 192 booked
+
+─── DATA SOURCE STATUS ───
+Salesforce: ✅ Live (hardcoded Mar 10 2026)
+Rainfocus (registration): ⏳ Not yet open
+Passkey (housing): ⏳ Not yet open
+ATC (travel/flights): ⏳ Not yet open
+Sponsor Master CSV: ${sponsorData.length > 0 ? '✅ Loaded (' + sponsorData.length + ' records)' : '⏳ Not uploaded'}
+  `.trim();
+}
+
+// ─── CHAT HISTORY ────────────────────────────────────────
+const chatHistory = [];
+
+// ─── SEND MESSAGE ────────────────────────────────────────
+async function sendChat() {
+  const input = document.getElementById('chat-input');
+  const msg = input.value.trim();
+  if (!msg) return;
+
+  appendMessage('user', msg);
+  input.value = '';
+  input.style.height = 'auto';
+  document.getElementById('chat-send').disabled = true;
+
+  // Hide suggestions after first real message
+  document.getElementById('chat-suggestions').style.display = 'none';
+
+  const thinkingEl = appendMessage('thinking', '⏳ Thinking…');
+
+  chatHistory.push({ role: 'user', content: msg });
+
+  try {
+    const systemPrompt = buildDashboardContext();
+
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: systemPrompt,
+        messages: chatHistory,
+      })
+    });
+
+    const data = await response.json();
+    thinkingEl.remove();
+
+    const reply = data.content?.[0]?.text || 'Sorry, I didn\'t get a response. Please try again.';
+    appendMessage('assistant', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+
+  } catch (err) {
+    thinkingEl.remove();
+    appendMessage('assistant', '⚠️ Something went wrong. Check your connection and try again.');
+    chatHistory.pop();
+  }
+
+  document.getElementById('chat-send').disabled = false;
+}
+
+function sendSuggestion(btn) {
+  document.getElementById('chat-input').value = btn.textContent;
+  sendChat();
+}
+
+// ─── APPEND MESSAGE ──────────────────────────────────────
+function appendMessage(role, text) {
+  const msgs = document.getElementById('chat-messages');
+  const el = document.createElement('div');
+  el.className = `chat-msg ${role}`;
+
+  // Convert markdown-ish formatting
+  const formatted = text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/^•\s/gm, '• ')
+    .replace(/\n\n/g, '<br><br>')
+    .replace(/\n/g, '<br>');
+
+  el.innerHTML = formatted;
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return el;
+}
+</script>
 </body>
 </html>
