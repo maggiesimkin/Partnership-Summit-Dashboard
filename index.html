@@ -448,7 +448,78 @@
     .upload-bar { padding: 12px 16px; }
     .metrics-grid { grid-template-columns: 1fr 1fr; }
   }
+
+  /* TAB NAV */
+  .tab-nav {
+    background: white;
+    border-bottom: 2px solid var(--border);
+    padding: 0 40px;
+    display: flex;
+    gap: 4px;
+    position: sticky;
+    top: 91px;
+    z-index: 90;
+    box-shadow: 0 2px 8px rgba(26,63,122,0.06);
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px;
+    padding: 14px 20px 11px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: color .2s, border-color .2s;
+    white-space: nowrap;
+  }
+  .tab-btn:hover { color: var(--blue-mid); }
+  .tab-btn.active { color: var(--blue-dark); border-bottom-color: var(--blue-mid); font-weight: 600; }
+
+  /* DEMOGRAPHICS TAB */
+  #tab-demographics { display: none; padding: 32px 40px; max-width: 1400px; margin: 0 auto; }
+  .demo-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 28px; }
+  .demo-header h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--blue-dark); }
+  .demo-header .demo-sub { font-size: 12px; color: var(--text-secondary); letter-spacing: .5px; }
+  .demo-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 24px; }
+  .demo-grid-wide { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 24px; }
+  .demo-card { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 22px 24px; box-shadow: 0 2px 8px rgba(26,63,122,0.04); }
+  .demo-card h3 { font-size: 11px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 18px; }
+  .yoy-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; gap: 10px; }
+  .yoy-label { font-size: 12px; color: var(--text-primary); flex: 0 0 130px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .yoy-bars { flex: 1; display: flex; flex-direction: column; gap: 3px; }
+  .yoy-bar-wrap { display: flex; align-items: center; gap: 6px; }
+  .yoy-bar-track { flex: 1; height: 7px; background: var(--neutral-light); border-radius: 4px; overflow: hidden; }
+  .yoy-bar-fill { height: 100%; border-radius: 4px; transition: width .6s ease; }
+  .bar-2024 { background: #4A78C8; opacity: .6; }
+  .bar-2025 { background: #85165A; }
+  .yoy-val { font-size: 10px; font-weight: 600; min-width: 36px; text-align: right; color: var(--text-secondary); }
+  .yoy-legend { display: flex; gap: 14px; margin-top: 14px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .yoy-legend-item { display: flex; align-items: center; gap: 5px; font-size: 10px; color: var(--text-secondary); }
+  .legend-swatch { width: 10px; height: 10px; border-radius: 2px; display: inline-block; }
+  .demo-stat-row { display: flex; gap: 14px; margin-bottom: 24px; }
+  .demo-stat-card { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 18px 22px; flex: 1; text-align: center; box-shadow: 0 2px 8px rgba(26,63,122,0.04); }
+  .demo-stat-val { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--blue-dark); line-height: 1; }
+  .demo-stat-label { font-size: 11px; color: var(--text-secondary); margin-top: 5px; }
+  .demo-stat-trend { font-size: 11px; font-weight: 600; margin-top: 4px; }
+  .trend-down { color: var(--flag-amber); } .trend-up { color: var(--flag-green); }
+  .demo-chart-wrap { position: relative; height: 220px; }
+  @media (max-width: 1100px) { .demo-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 700px) { .demo-grid, .demo-grid-wide { grid-template-columns: 1fr; } #tab-demographics { padding: 16px; } .tab-nav { padding: 0 16px; } }
 </style>
+<script>
+function switchTab(tab, el) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  if (el) el.classList.add('active');
+  var dash = document.getElementById('tab-dashboard');
+  var demo = document.getElementById('tab-demographics');
+  if (dash) dash.style.display = tab === 'dashboard' ? '' : 'none';
+  if (demo) demo.style.display = tab === 'demographics' ? 'block' : 'none';
+
+}
+</script>
 </head>
 <body>
 
@@ -488,8 +559,14 @@
   </button>
 </div>
 
+<!-- TAB NAV -->
+<div class="tab-nav" id="tabNav">
+  <button class="tab-btn active" onclick="switchTab('dashboard', this)">📊 Dashboard</button>
+  <button class="tab-btn" onclick="switchTab('demographics', this)">👥 Client Demographics</button>
+</div>
+
 <!-- MAIN -->
-<div class="main">
+<div class="main" id="tab-dashboard">
 
   <!-- FLAGS -->
   <div class="flags-panel">
@@ -1299,20 +1376,10 @@ function renderFlags(d) {
     });
   }
 
-  // Specific high-priority sponsor issues
-  const clarifySponsors = sponsorData.filter(s => s.needsClarification || s.status.toLowerCase().includes('clarify'));
-  if (clarifySponsors.length > 0) {
-    flags.push({ level: 'red', icon: '🚨', title: `Georgia Convention Center needs clarification — same contact as Atlanta CVB (Charlene Lopez)`, detail: 'Charlene Lopez appears as the contact for both. Confirm if Georgia Convention Center is a separate sponsor or a duplicate entry.' });
-  }
-  const dupForms = sponsorData.filter(s => s.formDuplicate);
-  if (dupForms.length > 0) {
-    flags.push({ level: 'amber', icon: '⚠️', title: `Hilton submitted the commitment form twice (IDs #12 and #13)`, detail: 'Joni Opperman submitted on 3/4 and again on 3/6. Confirm which submission is authoritative and mark the duplicate.' });
-  }
-
   // Sponsor master flags
   const notInSF = sponsorData.filter(s => s.status.toLowerCase().includes('not in sf'));
   if (notInSF.length > 0) {
-    flags.push({ level: 'red', icon: '🚨', title: `${notInSF.length} sponsor(s) have a commitment form but are NOT in Salesforce`, detail: notInSF.map(s => s.name.split('(')[0].trim()).join(', ') + ' — contracts need to be created in SF.' });
+    flags.push({ level: 'red', icon: '🚨', title: `${notInSF.length} sponsor(s) submitted a commitment form but have no Salesforce record`, detail: notInSF.map(s => s.name.split('(')[0].trim()).join(', ') + ' — SF records need to be created.' });
   }
   const missingContact = sponsorData.filter(s => (!s.contact || !s.email) && !s.status.toLowerCase().includes('host') && s.name.trim());
   if (missingContact.length > 0) {
@@ -1872,43 +1939,42 @@ function updateHeaderMeta(d) {
 // ─── SPONSOR MASTER DATA ─────────────────────────────────
 const SPONSOR_MASTER_RAW = [
   // ── CLOSED WON · HAS FORM ──
-  { name:"Ottawa Tourism",                                    status:"Salesforce: CLOSED WON", alpha:"OTT",  logo:"x", revenue:"$25,000", contact:"Glenn Duncan",    title:"Executive VP/CMO",                  email:"gduncan@ottawatourism.ca",          email2:"sseguin@ottawatourism.ca",              form:"X", formDate:"1/22/2026", formInitials:"GD",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Milwaukee",                                   status:"Salesforce: CLOSED WON", alpha:"MIL",  logo:"x", revenue:"$25,000", contact:"Leslie Johnson",   title:"VP Sales & Event Experiences",      email:"ljohnson@milwaukee.org",            email2:"slibby@milwaukee.org",                 form:"X", formDate:"1/23/2026", formInitials:"LJ",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit San Antonio",                                 status:"Salesforce: CLOSED WON", alpha:"SANA", logo:"x", revenue:"$25,000", contact:"Tyler Orwig",      title:"SVP of Sales",                      email:"tylerorwig@visitsanantonio.com",    email2:"Cat.Tijerina@visitsanantonio.com",      form:"X", formDate:"1/23/2026", formInitials:"TSO", formRep:"same as above",       registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"IHG Hotels & Resorts",                              status:"Salesforce: CLOSED WON", alpha:"IHG",  logo:"x", revenue:"$25,000", contact:"Cecilia Bell",     title:"Senior Account Director, Global Sales", email:"cecilia.bell@ihg.com",          email2:"",                                     form:"X", formDate:"1/30/2026", formInitials:"CFB", formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Atlanta Convention and Visitors Bureau",            status:"Salesforce: CLOSED WON", alpha:"ATL",  logo:"x", revenue:"$50,000", contact:"Charlene Lopez",   title:"EVP & CSO",                         email:"clopez@discoveratlanta.com",        email2:"kluangamath@discoveratlanta.com",       form:"X", formDate:"3/2/2026",  formInitials:"CL",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:true },
-  { name:"Hilton",                                            status:"Salesforce: CLOSED WON", alpha:"HIL",  logo:"x", revenue:"$25,000", contact:"Joni Opperman",    title:"Asst Managing Director",            email:"joni.opperman@hilton.com",          email2:"Ashley.Galvan@hilton.com",             form:"X", formDate:"3/4/2026",  formInitials:"JO",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", formDuplicate:true },
-  { name:"Visit Greater Palm Springs",                        status:"Salesforce: CLOSED WON", alpha:"PAL",  logo:"x", revenue:"$25,000", contact:"Will Trokey",      title:"National Accounts Director",        email:"will@visitgreaterps.com",           email2:"merve@visitgreaterps.com",             form:"X", formDate:"3/6/2026",  formInitials:"WET", formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Ottawa Tourism",                                    status:"Salesforce: CLOSED WON", alpha:"OTT",  logo:"x", revenue:"$25,000", contact:"Glenn Duncan",      title:"Executive VP/CMO",                    email:"gduncan@ottawatourism.ca",          email2:"sseguin@ottawatourism.ca",              form:"X", formDate:"1/22/2026", formInitials:"GD",  formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Milwaukee",                                   status:"Salesforce: CLOSED WON", alpha:"MIL",  logo:"x", revenue:"$25,000", contact:"Leslie Johnson",     title:"VP Sales & Event Experiences",        email:"ljohnson@milwaukee.org",            email2:"slibby@milwaukee.org",                 form:"X", formDate:"1/23/2026", formInitials:"LJ",  formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit San Antonio",                                 status:"Salesforce: CLOSED WON", alpha:"SANA", logo:"x", revenue:"$25,000", contact:"Tyler Orwig",        title:"SVP of Sales",                        email:"tylerorwig@visitsanantonio.com",    email2:"Cat.Tijerina@visitsanantonio.com",      form:"X", formDate:"1/23/2026", formInitials:"TSO", formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"IHG Hotels & Resorts",                              status:"Salesforce: CLOSED WON", alpha:"IHG",  logo:"x", revenue:"$25,000", contact:"Cecilia Bell",       title:"Senior Account Director, Global Sales", email:"cecilia.bell@ihg.com",          email2:"",                                     form:"X", formDate:"1/30/2026", formInitials:"CFB", formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Atlanta Convention and Visitors Bureau",            status:"Salesforce: CLOSED WON", alpha:"ATL",  logo:"x", revenue:"$50,000", contact:"Charlene Lopez",     title:"EVP & CSO",                           email:"clopez@discoveratlanta.com",        email2:"kluangamath@discoveratlanta.com",       form:"X", formDate:"3/2/2026",  formInitials:"CL",  formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:true },
+  { name:"Hilton",                                            status:"Salesforce: CLOSED WON", alpha:"HIL",  logo:"x", revenue:"$25,000", contact:"Joni Opperman",      title:"Asst Managing Director",              email:"joni.opperman@hilton.com",          email2:"Ashley.Galvan@hilton.com",             form:"X", formDate:"3/4/2026",  formInitials:"JO",  formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Greater Palm Springs",                        status:"Salesforce: CLOSED WON", alpha:"PAL",  logo:"x", revenue:"$25,000", contact:"Will Trokey",        title:"National Accounts Director",          email:"will@visitgreaterps.com",           email2:"merve@visitgreaterps.com",             form:"X", formDate:"3/6/2026",  formInitials:"WET", formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   // ── CLOSED WON · NO FORM YET ──
-  { name:"Visit Anaheim",                                     status:"Salesforce: CLOSED WON", alpha:"ANA",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Austin",                                      status:"Salesforce: CLOSED WON", alpha:"AUS",  logo:"x", revenue:"$25,000", contact:"Steve Genovesi",   title:"",                                  email:"sgenovesi@visitaustin.org",         email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Caesars Entertainment",                             status:"Salesforce: CLOSED WON", alpha:"CAE",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Encore",                                            status:"Salesforce: CLOSED WON", alpha:"ENC",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Fort Worth",                                  status:"Salesforce: CLOSED WON", alpha:"FOR",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Indy",                                        status:"Salesforce: CLOSED WON", alpha:"IND",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit KC",                                          status:"Salesforce: CLOSED WON", alpha:"KAN",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Long Beach Convention & Visitors Bureau",           status:"Salesforce: CLOSED WON", alpha:"LON",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Business Events Montreal",                          status:"Salesforce: CLOSED WON", alpha:"MON",  logo:"",  revenue:"$25,000", contact:"Mylène Gagnon",    title:"",                                  email:"mgagnon@mtl.org",                  email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"New Orleans & Company",                             status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"",  revenue:"$25,000", contact:"Stephanie Turner", title:"",                                  email:"sturner@neworleans.com",            email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"",  revenue:"$25,000", contact:"Elaine Williams",  title:"",                                  email:"ewilliams@mccno.com",               email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Visit Orlando (confirm: Visit or Convention Center?)", status:"Salesforce: CLOSED WON", alpha:"ORL", logo:"", revenue:"$25,000", contact:"",               title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:false },
-  { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Tampa Bay",                                   status:"Salesforce: CLOSED WON", alpha:"TAM",  logo:"x", revenue:"$25,000", contact:"",                 title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Destination Toronto",                               status:"Salesforce: CLOSED WON", alpha:"TOR",  logo:"",  revenue:"$25,000", contact:"Heather Neale",    title:"",                                  email:"hneale@destinationtoronto.com",     email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  // ── PIPELINE · HAS FORM ──
-  { name:"Experience Columbus",                               status:"In Pipeline",            alpha:"COL",  logo:"",  revenue:"$25,000", contact:"Bill Adams",        title:"Chief Sales Officer",               email:"badams@experiencecolumbus.com",     email2:"cneal@experiencecolumbus.com",          form:"X", formDate:"1/22/2026", formInitials:"WA",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Visit Seattle",                                     status:"Not in SF · Has Form",   alpha:"SEA",  logo:"",  revenue:"$25,000", contact:"Kelly Saling",      title:"SVP & CSO",                         email:"ksaling@visitseattle.org",          email2:"lpeterson@visitseattle.org",            form:"X", formDate:"1/27/2026", formInitials:"KLS", formRep:"TBD",                 registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Marriott International",                            status:"In Pipeline",            alpha:"MAR",  logo:"",  revenue:"$25,000", contact:"Maureen Selke",     title:"Senior Director Global Sales",      email:"maureen.selke@marriott.com",        email2:"",                                     form:"X", formDate:"1/27/2026", formInitials:"ms",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Events DC",                                         status:"In Pipeline",            alpha:"DC",   logo:"",  revenue:"$25,000", contact:"Stacey Knoppel",    title:"",                                  email:"sknoppel@eventsdc.com",             email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  // ── NOT IN SF · HAS FORM ──
-  { name:"Houston First Corporation",                         status:"Not in SF · Has Form",   alpha:"HOU",  logo:"",  revenue:"$25,000", contact:"Nathan Tollett",    title:"SVP Sales & Client Services",       email:"ntollett@visithouston.com",         email2:"kgutierrez@visithouston.com",           form:"X", formDate:"1/29/2026", formInitials:"NT",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Visit Baltimore",                                   status:"Not in SF · Has Form",   alpha:"BAL",  logo:"",  revenue:"$25,000", contact:"Lindsay Ruocco",    title:"Director of Events & Tradeshows",   email:"lruocco@baltimore.org",             email2:"awelsh@baltimore.org",                 form:"X", formDate:"1/30/2026", formInitials:"LR",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"Philadelphia Convention & Visitors Bureau",         status:"Not in SF · Has Form",   alpha:"PHIL", logo:"x", revenue:"$25,000", contact:"Maria Grasso",      title:"Chief Sales Officer",               email:"maria@discoverphl.com",             email2:"Devon Kelly devon@discoverphl.com",     form:"X", formDate:"1/22/2026", formInitials:"MG",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  // ── NEEDS CLARIFICATION ──
-  { name:"Georgia Convention Center",                         status:"⚠ Clarify — possible dup of Atlanta CVB", alpha:"GEO", logo:"", revenue:"", contact:"Charlene Lopez", title:"EVP & CSO (same as Atlanta CVB)", email:"clopez@discoveratlanta.com", email2:"kluangamath@discoveratlanta.com", form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", needsClarification:true },
+  { name:"Visit Anaheim",                                     status:"Salesforce: CLOSED WON", alpha:"ANA",  logo:"x", revenue:"$25,000", contact:"Lora Stanley",       title:"",                                    email:"lstanley@visitanaheim.org",         email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Austin",                                      status:"Salesforce: CLOSED WON", alpha:"AUS",  logo:"x", revenue:"$25,000", contact:"Steve Genovesi",     title:"",                                    email:"sgenovesi@visitaustin.org",         email2:"",                                     form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Caesars Entertainment",                             status:"Salesforce: CLOSED WON", alpha:"CAE",  logo:"x", revenue:"$25,000", contact:"Mindi Premo",        title:"",                                    email:"rherschdorfer@caesars.com",         email2:"mpremo@caesars.com",                   form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Encore",                                            status:"Salesforce: CLOSED WON", alpha:"ENC",  logo:"x", revenue:"$25,000", contact:"Kim Lambeth",        title:"",                                    email:"kim.lambeth@encoreglobal.com",      email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Fort Worth",                                  status:"Salesforce: CLOSED WON", alpha:"FOR",  logo:"x", revenue:"$25,000", contact:"Melanie Hoover",     title:"",                                    email:"melaniehoover@fortworth.com",       email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Georgia World Congress Center",                     status:"Salesforce: CLOSED WON", alpha:"GEO",  logo:"",  revenue:"$25,000", contact:"Kim Allison",        title:"",                                    email:"kallison@gwcc.com",                email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"", needSolo:true },
+  { name:"Visit Indy",                                        status:"Salesforce: CLOSED WON", alpha:"IND",  logo:"x", revenue:"$25,000", contact:"Leonard Hoops",      title:"",                                    email:"lhoops@visitindy.com",              email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit KC",                                          status:"Salesforce: CLOSED WON", alpha:"KAN",  logo:"x", revenue:"$25,000", contact:"Kathy Nelson",       title:"",                                    email:"knelson@visitkc.com",               email2:"nhermiston@visitkc.com",               form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Long Beach Convention & Visitors Bureau",           status:"Salesforce: CLOSED WON", alpha:"LON",  logo:"x", revenue:"$25,000", contact:"Jennifer Pak",       title:"",                                    email:"jenniferp@meetlb.com",              email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Business Events Montreal",                          status:"Salesforce: CLOSED WON", alpha:"MON",  logo:"x", revenue:"$25,000", contact:"Mylène Gagnon",      title:"",                                    email:"mgagnon@mtl.org",                  email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"New Orleans & Company",                             status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Stephanie Turner",   title:"",                                    email:"sturner@neworleans.com",            email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Elaine Williams",    title:"",                                    email:"ewilliams@mccno.com",               email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Visit Orlando (confirm: Visit or Convention Center?)", status:"Salesforce: CLOSED WON", alpha:"ORL", logo:"", revenue:"$25,000", contact:"Mark Tester",       title:"",                                    email:"mark.tester@occc.net",             email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"", nameConfirmed:false, needSolo:true },
+  { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"Jeff Gassaway",      title:"",                                    email:"jgassaway@visitsaltlake.com",       email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"Kellie Linder",      title:"",                                    email:"klinder@visitsavannah.com",         email2:"dfeldman@visitsavannah.com",            form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Tampa Bay",                                   status:"Salesforce: CLOSED WON", alpha:"TAM",  logo:"x", revenue:"$25,000", contact:"Adam DePiro",        title:"",                                    email:"adepiro@visittampabay.com",         email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Destination Toronto",                               status:"Salesforce: CLOSED WON", alpha:"TOR",  logo:"x", revenue:"$25,000", contact:"Heather Neale",      title:"",                                    email:"hneale@destinationtoronto.com",     email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  // ── PIPELINE ──
+  { name:"Visit Baltimore",                                   status:"In Pipeline",            alpha:"BAL",  logo:"x", revenue:"$25,000", contact:"Lindsay Ruocco",     title:"Director of Events & Tradeshows",     email:"lruocco@baltimore.org",             email2:"awelsh@baltimore.org",                 form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Experience Columbus",                               status:"In Pipeline",            alpha:"COL",  logo:"x", revenue:"$25,000", contact:"Bill Adams",          title:"Chief Sales Officer",                 email:"badams@experiencecolumbus.com",     email2:"cneal@experiencecolumbus.com",          form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Events DC",                                         status:"In Pipeline",            alpha:"DC",   logo:"x", revenue:"$25,000", contact:"Stacey Knoppel",     title:"",                                    email:"sknoppel@eventsdc.com",             email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Houston First",                                     status:"In Pipeline",            alpha:"HOU",  logo:"x", revenue:"$25,000", contact:"Nathan Tollett",      title:"SVP Sales & Client Services",         email:"ntollett@visithouston.com",         email2:"kgutierrez@visithouston.com",           form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Marriott International",                            status:"In Pipeline",            alpha:"MAR",  logo:"x", revenue:"$25,000", contact:"Maureen Selke",       title:"Senior Director Global Sales",        email:"maureen.selke@marriott.com",        email2:"",                                     form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
+  { name:"Philadelphia Convention & Visitors Bureau",         status:"In Pipeline",            alpha:"PHIL", logo:"x", revenue:"$25,000", contact:"Maria Grasso",        title:"Chief Sales Officer",                 email:"maria@discoverphl.com",             email2:"Devon Kelly devon@discoverphl.com",     form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Rosen Hotels & Resorts",                            status:"In Pipeline",            alpha:"ROS",  logo:"x", revenue:"$25,000", contact:"Suzanne Kennedy",     title:"",                                    email:"SKennedy@rosenhotels.com",          email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Seattle",                                     status:"In Pipeline",            alpha:"SEA",  logo:"x", revenue:"$25,000", contact:"Kelly Saling",        title:"SVP & CSO",                           email:"ksaling@visitseattle.org",          email2:"lpeterson@visitseattle.org",            form:"X", formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"" },
   // ── HOST CITY ──
-  { name:"Destination Vancouver (confirm name)",              status:"Host City",              alpha:"VAN",  logo:"",  revenue:"$0",      contact:"",                  title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Destination Vancouver (confirm name)",              status:"Host City",              alpha:"VAN",  logo:"",  revenue:"$25,000", contact:"Alison Best",         title:"",                                    email:"abest@destinationvancouver.com",    email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",  registered:"", flight:"", dineAround:"", msoe:"",       liaison:"", nameConfirmed:false, needSolo:true },
 ];
 
 let sponsorData = SPONSOR_MASTER_RAW;
@@ -2200,6 +2266,661 @@ function printContactDir() {
   <script>window.print();<\/script></body></html>`);
 }
 
+</script>
+
+<!-- DEMOGRAPHICS TAB -->
+<div id="tab-demographics">
+  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:28px">
+    <h2 style="font-family:'DM Serif Display',serif;font-size:22px;color:#1A3F7A">Client Demographics</h2>
+    <div style="font-size:12px;color:#4A6080">2024 Tulum &nbsp;·&nbsp; 2025 Tampa &nbsp;·&nbsp; Year-over-Year Comparison</div>
+  </div>
+
+  <!-- STAT STRIP -->
+  <div style="display:flex;gap:14px;margin-bottom:24px">
+    <div style="background:white;border-radius:12px;border:1px solid #D4E0F0;padding:18px 22px;flex:1;text-align:center;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:#1A3F7A;line-height:1">127</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:5px">2024 Attendees</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:2px">Tulum</div>
+    </div>
+    <div style="background:white;border-radius:12px;border:1px solid #D4E0F0;padding:18px 22px;flex:1;text-align:center;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:#1A3F7A;line-height:1">112</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:5px">2025 Attendees</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:2px">Tampa</div>
+      <div style="font-size:11px;font-weight:600;color:#D4730A;margin-top:2px">▼ 15 vs prior year</div>
+    </div>
+    <div style="background:white;border-radius:12px;border:1px solid #D4E0F0;padding:18px 22px;flex:1;text-align:center;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:#1A3F7A;line-height:1">88%</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:5px">Association Segment</div>
+      <div style="font-size:11px;font-weight:600;color:#1A7A4A;margin-top:2px">▲ Up from 82% in 2024</div>
+    </div>
+    <div style="background:white;border-radius:12px;border:1px solid #D4E0F0;padding:18px 22px;flex:1;text-align:center;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:#1A3F7A;line-height:1">70%</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:5px">Director+ Level</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:2px">Consistent YoY</div>
+    </div>
+    <div style="background:white;border-radius:12px;border:1px solid #D4E0F0;padding:18px 22px;flex:1;text-align:center;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-family:'DM Serif Display',serif;font-size:32px;color:#1A3F7A;line-height:1">78%</div>
+      <div style="font-size:11px;color:#4A6080;margin-top:5px">Manage 1–15 Events/yr</div>
+      <div style="font-size:11px;font-weight:600;color:#1A7A4A;margin-top:2px">▲ Up from 58% in 2024</div>
+    </div>
+  </div>
+
+  <!-- ROW 1 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
+    
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">Position Level</div>
+      
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Director</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">60</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:92%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">58</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:89%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">C-Suite / C-Level</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">26</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:40%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">22</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:34%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Vice President</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">31</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:48%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">19</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:29%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Manager</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">10</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:15%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">6</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:9%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Other</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">0</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:0%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">6</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:9%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div><div style="display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid #D4E0F0">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(74,120,200,0.55)"></span> 2024 Tulum
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(133,22,90,0.8)"></span> 2025 Tampa
+        </div>
+      </div>
+    </div>
+    
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">Organization Type</div>
+      
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Assoc. (Professional)</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">46</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:92%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">41</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:82%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Assoc. (Medical/Dental)</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">43</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:86%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">38</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:76%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Assoc. (Trade)</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">14</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:28%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">12</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:24%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Third Party / PCO</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">12</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:24%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">9</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:18%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">Corporation</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">7</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:14%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">6</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:12%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div><div style="display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid #D4E0F0">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(74,120,200,0.55)"></span> 2024 Tulum
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(133,22,90,0.8)"></span> 2025 Tampa
+        </div>
+      </div>
+    </div>
+    
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">Events Managed Annually</div>
+      
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">1–5 events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">34</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:76%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">34</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:76%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">6–15 events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">39</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:87%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">36</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:80%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">16–30 events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">20</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:44%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">14</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:31%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">31–50 events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">8</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:18%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">10</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:22%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">51–100 events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">11</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:24%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">5</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:11%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">100+ events</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">8</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:18%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">12</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:27%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px;transition:width .6s"></div>
+          </div>
+        </div>
+      </div><div style="display:flex;gap:14px;margin-top:12px;padding-top:10px;border-top:1px solid #D4E0F0">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(74,120,200,0.55)"></span> 2024 Tulum
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(133,22,90,0.8)"></span> 2025 Tampa
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 2 -->
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-bottom:24px">
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">Largest Event Attendance</div>
+      
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">1–999</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">6</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:13%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">5</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:11%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">1,000–2,999</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">25</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:56%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">18</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:40%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">3,000–4,999</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">23</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:51%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">18</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:40%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">5,000–7,499</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">21</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:47%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">22</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:49%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">7,500–9,999</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">13</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:29%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">8</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:18%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">10,000+</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">39</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:87%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">28</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:62%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div><div style="display:flex;gap:14px;margin-top:14px;padding-top:10px;border-top:1px solid #D4E0F0">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(74,120,200,0.55)"></span> 2024 Tulum
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(133,22,90,0.8)"></span> 2025 Tampa
+        </div>
+      </div>
+    </div>
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">Annual Event Budget</div>
+      
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">< $250K</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">1</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:1%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">2</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:3%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">$250K–$499K</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">2</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:3%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">3</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:4%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">$500K–$999K</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">6</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:9%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">5</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:7%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">$1M–$4.9M</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">64</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:91%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">52</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:74%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div style="font-size:12px;color:#0F1E3A;margin-bottom:4px">$5M+</div>
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px">
+          <div style="font-size:9px;font-weight:700;color:#4A78C8;width:30px;text-align:right">54</div>
+          <div style="flex:1;height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+            <div style="width:77%;height:100%;background:rgba(74,120,200,0.55);border-radius:4px"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px">
+          <div style="font-size:9px;font-weight:700;color:#85165A;width:30px;text-align:right">45</div>
+          <div style="flex:1;height:8px;background:#F5EEF3;border-radius:4px;overflow:hidden">
+            <div style="width:64%;height:100%;background:rgba(133,22,90,0.8);border-radius:4px"></div>
+          </div>
+        </div>
+      </div><div style="margin-top:8px;font-size:10px;color:#4A6080;font-style:italic">Note: 2025 used open text entry; values bucketed for comparison</div><div style="display:flex;gap:14px;margin-top:14px;padding-top:10px;border-top:1px solid #D4E0F0">
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(74,120,200,0.55)"></span> 2024 Tulum
+        </div>
+        <div style="display:flex;align-items:center;gap:5px;font-size:10px;color:#4A6080">
+          <span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:rgba(133,22,90,0.8)"></span> 2025 Tampa
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROW 3 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px">
+        <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">2024 Event Types Planned (Multi-Select)</div>
+      <div style="font-size:10px;color:#4A6080;margin-bottom:12px">Multi-select — 2024 respondents (n=127)</div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Association Events</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">115</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:91%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Healthcare & Medical</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">50</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:39%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Tradeshows</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">65</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:51%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Digital / Livestream</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">38</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:30%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Corporate Events</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">18</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:14%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div style="display:flex;justify-content:space-between;margin-bottom:3px">
+          <div style="font-size:12px;color:#0F1E3A">Incentive Events</div>
+          <div style="font-size:11px;font-weight:600;color:#4A78C8">12</div>
+        </div>
+        <div style="height:8px;background:#EBF1FB;border-radius:4px;overflow:hidden">
+          <div style="width:9%;height:100%;background:rgba(74,120,200,0.6);border-radius:4px"></div>
+        </div>
+      </div>
+    </div>
+    
+    <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:22px 24px;box-shadow:0 2px 8px rgba(26,63,122,0.04)">
+      <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:16px">2025 Tampa Destination Sentiment</div>
+      
+      <div style="display:flex;flex-direction:column;gap:16px">
+        <div>
+          <div style="font-size:12px;color:#4A6080;margin-bottom:8px;font-weight:600">Booked events in Tampa in last 7 years?</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="font-size:11px;min-width:50px">Yes (37%)</div>
+            <div style="flex:1;height:10px;background:#EBF1FB;border-radius:5px;overflow:hidden"><div style="width:37%;height:100%;background:#1A7A4A;border-radius:5px"></div></div>
+            <div style="font-size:11px;font-weight:700;color:#1A7A4A">41</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:11px;min-width:50px">No (63%)</div>
+            <div style="flex:1;height:10px;background:#EBF1FB;border-radius:5px;overflow:hidden"><div style="width:63%;height:100%;background:rgba(74,120,200,0.4);border-radius:5px"></div></div>
+            <div style="font-size:11px;font-weight:700;color:#4A6080">70</div>
+          </div>
+        </div>
+        <div>
+          <div style="font-size:12px;color:#4A6080;margin-bottom:8px;font-weight:600">Would consider Tampa for future meetings?</div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="font-size:11px;min-width:65px">Yes (74%)</div>
+            <div style="flex:1;height:10px;background:#EBF1FB;border-radius:5px;overflow:hidden"><div style="width:74%;height:100%;background:#1A7A4A;border-radius:5px"></div></div>
+            <div style="font-size:11px;font-weight:700;color:#1A7A4A">83</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+            <div style="font-size:11px;min-width:65px">Not sure (21%)</div>
+            <div style="flex:1;height:10px;background:#EBF1FB;border-radius:5px;overflow:hidden"><div style="width:21%;height:100%;background:#D4730A;opacity:.7;border-radius:5px"></div></div>
+            <div style="font-size:11px;font-weight:700;color:#D4730A">23</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:11px;min-width:65px">No (4%)</div>
+            <div style="flex:1;height:10px;background:#EBF1FB;border-radius:5px;overflow:hidden"><div style="width:4%;height:100%;background:#C0392B;border-radius:5px"></div></div>
+            <div style="font-size:11px;font-weight:700;color:#C0392B">4</div>
+          </div>
+        </div>
+        <div style="background:#EBF1FB;border-radius:8px;padding:12px 14px;border-left:3px solid #2B5EAC">
+          <div style="font-size:11px;font-weight:700;color:#1A3F7A;margin-bottom:3px">💡 Key Insight</div>
+          <div style="font-size:11px;color:#4A6080;line-height:1.5">74% said yes to future Tampa consideration — strong ROI signal for the Visit Tampa Bay partnership and host impact narrative.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- INSIGHTS -->
+  <div style="background:white;border-radius:14px;border:1px solid #D4E0F0;padding:24px 28px;box-shadow:0 2px 8px rgba(26,63,122,0.04);margin-bottom:24px">
+    <div style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#4A6080;margin-bottom:18px">📊 Key Insights — Year over Year</div>
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+
+      <div style="background:#EBF1FB;border-radius:10px;padding:16px 18px;border-left:3px solid #2B5EAC">
+        <div style="font-size:12px;font-weight:700;color:#1A3F7A;margin-bottom:6px">👥 Attendance Dipped</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">127 attendees in Tulum vs. 112 in Tampa — a 12% drop. Worth monitoring for Vancouver 2026 to ensure registration pacing recovers.</div>
+      </div>
+
+      <div style="background:#EBF1FB;border-radius:10px;padding:16px 18px;border-left:3px solid #2B5EAC">
+        <div style="font-size:12px;font-weight:700;color:#1A3F7A;margin-bottom:6px">🏥 Association Segment Strengthened</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">Association attendees (Medical/Dental + Professional + Trade) rose from 82% in Tulum to 88% in Tampa — the core buyer audience is deepening.</div>
+      </div>
+
+      <div style="background:#EBF1FB;border-radius:10px;padding:16px 18px;border-left:3px solid #2B5EAC">
+        <div style="font-size:12px;font-weight:700;color:#1A3F7A;margin-bottom:6px">🎯 Senior-Level Consistency</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">Director+ representation held steady at ~70% both years. The event reliably attracts decision-makers — a strong story for sponsors and partners.</div>
+      </div>
+
+      <div style="background:#F5EEF3;border-radius:10px;padding:16px 18px;border-left:3px solid #85165A">
+        <div style="font-size:12px;font-weight:700;color:#590044;margin-bottom:6px">📉 VP Attendance Declined</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">VP-level attendees dropped from 31 in Tulum to 19 in Tampa. Could reflect the smaller overall attendance or a shift in who organizations are sending.</div>
+      </div>
+
+      <div style="background:#F5EEF3;border-radius:10px;padding:16px 18px;border-left:3px solid #85165A">
+        <div style="font-size:12px;font-weight:700;color:#590044;margin-bottom:6px">📅 Smaller Event Managers Growing</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">Attendees managing 1–15 events/year grew from 58% to 78%. This signals a shift toward smaller-portfolio planners — relevant for programming and sponsor matching.</div>
+      </div>
+
+      <div style="background:#EBF7F3;border-radius:10px;padding:16px 18px;border-left:3px solid #1A7A4A">
+        <div style="font-size:12px;font-weight:700;color:#1A7A4A;margin-bottom:6px">🌆 Strong Tampa Destination ROI</div>
+        <div style="font-size:12px;color:#4A6080;line-height:1.6">74% of 2025 attendees would consider Tampa for future events, and 95% either said yes or maybe. Powerful asset for the Visit Tampa Bay host impact story.</div>
+      </div>
+
+    </div>
+  </div>
+
+
+</div>
+
+<script>
 // ─── REGISTRATION → TRAVEL CONVERSION ────────────────────────────────────────
 
 function updateConversionPanel(derivedData) {
