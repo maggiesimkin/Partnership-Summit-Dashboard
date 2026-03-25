@@ -791,42 +791,6 @@
     </div>
   </div>
 
-  <!-- PARTNER CONTACT DIRECTORY -->
-  <div class="flags-panel" style="margin-top:0" id="contactDirPanel">
-    <div class="flags-header" style="background:linear-gradient(90deg,var(--blue-pale),white)">
-      <h2 style="color:var(--blue-dark)">
-        <span style="font-family:'DM Serif Display',serif;font-size:16px">📇 Partner Contact Directory</span>
-        <span style="font-size:11px;font-weight:400;font-family:'DM Sans',sans-serif;color:var(--text-secondary);margin-left:8px">All sponsors · contacts for event week</span>
-      </h2>
-      <div style="display:flex;gap:8px;align-items:center">
-        <input id="contact-search" type="text" placeholder="Search sponsor or name…" oninput="filterContactDir()" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--border);border-radius:7px;padding:6px 12px;width:200px">
-        <select id="contact-filter-status" onchange="filterContactDir()" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--border);border-radius:6px;padding:4px 8px;background:white;color:var(--text-primary)">
-          <option value="all">All Statuses</option>
-          <option value="closed">Closed Won</option>
-          <option value="pipeline">Pipeline</option>
-        </select>
-        <button onclick="printContactDir()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:7px;padding:6px 14px;cursor:pointer">🖨 Print</button>
-      </div>
-    </div>
-    <div style="overflow-x:auto">
-      <table id="contact-dir-table" style="min-width:700px">
-        <thead>
-          <tr>
-            <th style="min-width:180px">Sponsor</th>
-            <th>Level</th>
-            <th>Status</th>
-            <th>Revenue</th>
-            <th style="min-width:160px">Primary Contact</th>
-            <th style="min-width:160px">Email</th>
-            <th style="min-width:120px">Phone</th>
-            <th>Form</th>
-            <th>Notes</th>
-          </tr>
-        </thead>
-        <tbody id="contact-dir-body"></tbody>
-      </table>
-    </div>
-  </div>
 
   <!-- REG-TO-TRAVEL CONVERSION -->
   <div class="charts-row" style="align-items:flex-start">
@@ -979,7 +943,7 @@
         <div style="font-size:10px;font-weight:600;color:var(--flag-amber);text-transform:uppercase;letter-spacing:.5px">Renewed · In Pipeline</div>
       </div>
       <div style="background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:8px 16px;text-align:center">
-        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-red)">9</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-red)">5</div>
         <div style="font-size:10px;font-weight:600;color:var(--flag-red);text-transform:uppercase;letter-spacing:.5px">Not Yet in SF Pipeline</div>
       </div>
       <div style="background:var(--blue-pale);border:1px solid var(--blue-border);border-radius:8px;padding:8px 16px;text-align:center">
@@ -987,7 +951,7 @@
         <div style="font-size:10px;font-weight:600;color:var(--blue-dark);text-transform:uppercase;letter-spacing:.5px">Net New 2026</div>
       </div>
       <div style="background:rgba(96,229,207,0.1);border:1px solid rgba(96,229,207,0.3);border-radius:8px;padding:8px 16px;text-align:center;margin-left:auto">
-        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--teal-dark)">$225K</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--teal-dark)">$125K</div>
         <div style="font-size:10px;font-weight:600;color:var(--teal-dark);text-transform:uppercase;letter-spacing:.5px">Potential Upside if All Renew</div>
       </div>
     </div>
@@ -1046,21 +1010,24 @@
           <tr><td>Rosen Hotels &amp; Resorts</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Buying Decision</td></tr>
 
           <!-- NOT YET IN PIPELINE -->
-          <tr><td colspan="4" style="background:#FFF8F0;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-red);padding:8px 18px">⚠ Not Yet in SF Pipeline — Needs Opportunity Created (9)</td></tr>
-          <tr style="background:#FFFAF7"><td style="font-weight:500">Destination DC</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)">Separate from Events DC · needs outreach</td></tr>
-          <tr style="background:#FFFAF7"><td style="font-weight:500">Louisville Tourism</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
+          <tr><td colspan="4" style="background:#FFF8F0;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-red);padding:8px 18px">⚠ Not Yet in SF Pipeline — Needs Opportunity Created (5)</td></tr>
           <tr style="background:#FFFAF7"><td style="font-weight:500">MGM Resorts International</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
-          <tr style="background:#FFFAF7"><td style="font-weight:500">Visit Oklahoma City</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
-          <tr style="background:#FFFAF7"><td style="font-weight:500">Orange County Convention Center</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr style="background:#FFFAF7"><td style="font-weight:500">Travel Portland</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr style="background:#FFFAF7"><td style="font-weight:500">Discover Puerto Rico</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr style="background:#FFFAF7"><td style="font-weight:500">San Diego Tourism Authority</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)">In master list as Prospect · form submitted</td></tr>
           <tr style="background:#FFFAF7"><td style="font-weight:500">United Airlines</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-red)">NO SF RECORD</span></td><td style="color:var(--flag-red)">✗</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr style="background:#FFF0ED;font-weight:600">
-            <td>Potential upside if all 9 renew</td>
-            <td colspan="2" style="color:var(--flag-red);font-family:'DM Serif Display',serif;font-size:16px">$225,000</td>
+            <td>Potential upside if all 5 renew</td>
+            <td colspan="2" style="color:var(--flag-red);font-family:'DM Serif Display',serif;font-size:16px">$125,000</td>
             <td style="font-size:11px;color:var(--text-secondary)">At standard $25K · SF opportunities needed</td>
           </tr>
+
+          <!-- NOT RENEWING -->
+          <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--text-secondary);padding:8px 18px">✕ Confirmed Not Renewing</td></tr>
+          <tr style="opacity:0.6"><td style="font-weight:500;text-decoration:line-through;color:var(--text-secondary)">Destination DC</td><td><span style="font-size:10px;font-weight:700;color:var(--text-secondary)">NOT RENEWING</span></td><td style="color:var(--text-secondary)">—</td><td style="font-size:11px;color:var(--text-secondary)">Confirmed will not renew for 2026</td></tr>
+          <tr style="opacity:0.6"><td style="font-weight:500;text-decoration:line-through;color:var(--text-secondary)">Louisville Tourism</td><td><span style="font-size:10px;font-weight:700;color:var(--text-secondary)">NOT RENEWING</span></td><td style="color:var(--text-secondary)">—</td><td style="font-size:11px;color:var(--text-secondary)">Confirmed will not renew for 2026</td></tr>
+          <tr style="opacity:0.6"><td style="font-weight:500;text-decoration:line-through;color:var(--text-secondary)">Orange County Convention Center</td><td><span style="font-size:10px;font-weight:700;color:var(--text-secondary)">NOT RENEWING</span></td><td style="color:var(--text-secondary)">—</td><td style="font-size:11px;color:var(--text-secondary)">Confirmed will not renew for 2026</td></tr>
+          <tr style="opacity:0.6"><td style="font-weight:500;text-decoration:line-through;color:var(--text-secondary)">Visit Oklahoma City</td><td><span style="font-size:10px;font-weight:700;color:var(--text-secondary)">NOT RENEWING</span></td><td style="color:var(--text-secondary)">—</td><td style="font-size:11px;color:var(--text-secondary)">Confirmed will not renew for 2026</td></tr>
 
           <!-- NET NEW -->
           <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blue-mid);padding:8px 18px">★ Net New 2026 Partners (not in 2025 list)</td></tr>
@@ -1356,7 +1323,7 @@ function renderMetricCards(d) {
       document.getElementById('travel-bar').style.width = Math.min(100, pct) + '%';
       document.getElementById('travel-goal-label').textContent = `${pct}% of registered attendees`;
     } else {
-      document.getElementById('travel-sub').textContent = `travelers · all ticketed · IHG (8) + Milwaukee (3) + 2 unmatched`;
+      document.getElementById('travel-sub').textContent = `travelers · IHG (4) · Milwaukee (3) · Marriott (4) · Savannah (2)`;
       document.getElementById('travel-wow').textContent = 'ATC · Mar 24';
       document.getElementById('travel-wow').className = 'metric-wow flat';
       document.getElementById('travel-bar').style.width = '0%';
@@ -1460,8 +1427,6 @@ function renderFlags(d) {
   }
 
   // ATC: travelers with no matching sponsor
-  flags.push({ level: 'amber', icon: '⚠️', title: `2 ATC travelers cannot be matched to a sponsor`, detail: 'Lindsay Gold (lgold@idfa.org) and Caitlin Gold (caitlingold@mac.com) are booked via ATC but are not listed under any sponsor\'s client record. Confirm which sponsor they belong to.' });
-
   // Overdue pipeline (SF)
   if (d.overduePipeline && d.overduePipeline.length > 0) {
     const overdueTot = d.overduePipeline.reduce((s, r) => s + r.amount, 0);
@@ -1905,9 +1870,10 @@ function renderHousingTable(d) {
 
   // ── ATC TRAVEL SECTION ──
   const atcTravelers = [
-    { sponsor: 'IHG Hotels & Resorts', count: 8, travelers: 'Vicki & James Hawarden, Clay & Barbara Tyeryar, Kim & Marlene Graves, Michael & Monica Wilson', status: 'TICKETED' },
-    { sponsor: 'Visit Milwaukee',       count: 3, travelers: 'Ariel & Michael Goldsmith, Katherine LaMacchia', status: 'TICKETED' },
-    { sponsor: 'Unmatched ⚠',          count: 2, travelers: 'Lindsay Gold, Caitlin Gold — sponsor TBD', status: 'NEEDS REVIEW' },
+    { sponsor: 'IHG Hotels & Resorts',   count: 4, travelers: 'Vicki & James Hawarden, Kim & Marlene Graves', status: 'TICKETED' },
+    { sponsor: 'Visit Milwaukee',        count: 3, travelers: 'Ariel & Michael Goldsmith, Katherine LaMacchia', status: 'TICKETED' },
+    { sponsor: 'Marriott International', count: 4, travelers: 'Lindsay Gold, Caitlin Gold, Michael & Monica Wilson', status: 'TICKETED' },
+    { sponsor: 'Visit Savannah',         count: 2, travelers: 'Clay & Barbara Tyeryar', status: 'TICKETED' },
   ];
 
   const travelHTML = `
@@ -1929,7 +1895,7 @@ function renderHousingTable(d) {
         <tr style="background:var(--neutral-light)">
           <td style="font-weight:700">Total</td>
           <td style="text-align:center;font-weight:700;color:var(--blue-dark)">${d.travelTotal}</td>
-          <td style="font-size:11px;color:var(--text-secondary)">IHG (8) · Milwaukee (3) · 2 unmatched</td>
+          <td style="font-size:11px;color:var(--text-secondary)">IHG (4) · Milwaukee (3) · Marriott (4) · Savannah (2)</td>
           <td style="text-align:center"><span style="font-size:10px;font-weight:700;color:var(--flag-green);text-transform:uppercase;letter-spacing:.5px">ALL TICKETED</span></td>
         </tr>
       </tbody>
@@ -2051,7 +2017,7 @@ const SPONSOR_MASTER_RAW = [
   { name:"Ottawa Tourism",                                    status:"Salesforce: CLOSED WON", alpha:"OTT",  logo:"x", revenue:"$25,000", contact:"Glenn Duncan",    title:"Executive VP/CMO",                  email:"gduncan@ottawatourism.ca",          email2:"sseguin@ottawatourism.ca",              form:"X", formDate:"1/22/2026", formInitials:"GD",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Visit Milwaukee",                                   status:"Salesforce: CLOSED WON", alpha:"MIL",  logo:"x", revenue:"$25,000", contact:"Leslie Johnson",   title:"VP Sales & Event Experiences",      email:"ljohnson@milwaukee.org",            email2:"slibby@milwaukee.org",                 form:"X", formDate:"1/23/2026", formInitials:"LJ",  formRep:"",                    registered:"", flight:"X", dineAround:"", msoe:"22-Jan", liaison:"", clients:"Katherine LaMacchia, Ari & Michael Goldsmith" },
   { name:"Visit San Antonio",                                 status:"Salesforce: CLOSED WON", alpha:"SANA", logo:"x", revenue:"$25,000", contact:"Tyler Orwig",      title:"SVP of Sales",                      email:"tylerorwig@visitsanantonio.com",    email2:"Cat.Tijerina@visitsanantonio.com",      form:"X", formDate:"1/23/2026", formInitials:"TSO", formRep:"same as above",       registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"IHG Hotels & Resorts",                              status:"Salesforce: CLOSED WON", alpha:"IHG",  logo:"x", revenue:"$25,000", contact:"Cecilia Bell",     title:"Senior Account Director, Global Sales", email:"cecilia.bell@ihg.com",          email2:"",                                     form:"X", formDate:"1/30/2026", formInitials:"CFB", formRep:"",                    registered:"", flight:"X", dineAround:"", msoe:"22-Jan", liaison:"", clients:"Bill Reed, Vicki Hawarden + guest, Clay & Barbara Tyeryar, Kim & Marlene Graves, Michael & Monica Wilson" },
+  { name:"IHG Hotels & Resorts",                              status:"Salesforce: CLOSED WON", alpha:"IHG",  logo:"x", revenue:"$25,000", contact:"Cecilia Bell",     title:"Senior Account Director, Global Sales", email:"cecilia.bell@ihg.com",          email2:"",                                     form:"X", formDate:"1/30/2026", formInitials:"CFB", formRep:"",                    registered:"", flight:"X", dineAround:"", msoe:"22-Jan", liaison:"", clients:"Bill Reed, Vicki Hawarden + guest, Kim & Marlene Graves" },
   { name:"Atlanta Convention & Visitors Bureau",              status:"Salesforce: CLOSED WON", alpha:"ATL",  logo:"x", revenue:"$50,000", contact:"Charlene Lopez",   title:"EVP & CSO",                         email:"clopez@discoveratlanta.com",        email2:"kluangamath@discoveratlanta.com",       form:"X", formDate:"3/2/2026",  formInitials:"CL",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Hilton",                                            status:"Salesforce: CLOSED WON", alpha:"HIL",  logo:"x", revenue:"$25,000", contact:"Joni Opperman",    title:"Asst Managing Director",            email:"joni.opperman@hilton.com",          email2:"Ashley.Galvan@hilton.com",             form:"X", formDate:"3/4/2026",  formInitials:"JoJo",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Visit Greater Palm Springs",                        status:"Salesforce: CLOSED WON", alpha:"PAL",  logo:"x", revenue:"$25,000", contact:"Will Trokey",      title:"National Accounts Director",        email:"will@visitgreaterps.com",           email2:"merve@visitgreaterps.com",             form:"X", formDate:"3/6/2026",  formInitials:"WET", formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
@@ -2069,7 +2035,7 @@ const SPONSOR_MASTER_RAW = [
   { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Elaine Williams",  title:"",                                  email:"ewilliams@mccno.com",               email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Visit Orlando",                                      status:"Salesforce: CLOSED WON", alpha:"ORL",  logo:"x", revenue:"$25,000", contact:"Lisa Messina",     title:"",                                  email:"Lisa.Messina@visitorlando.com",     email2:"emily.clancy@visitorlando.com",         form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"Jeff Gassaway",     title:"",                                  email:"jgassaway@visitsaltlake.com",       email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"Kellie Linder",     title:"VP of Sales",                       email:"klinder@visitsavannah.com",         email2:"dfeldman@visitsavannah.com",            form:"X", formDate:"3/24/2026",  formInitials:"KL",    formRep:"Kellie Linder",       registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"Kellie Linder",     title:"VP of Sales",                       email:"klinder@visitsavannah.com",         email2:"dfeldman@visitsavannah.com",            form:"X", formDate:"3/24/2026",  formInitials:"KL",    formRep:"Kellie Linder",       registered:"", flight:"X", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Visit Tampa Bay",                                   status:"Salesforce: CLOSED WON", alpha:"TAM",  logo:"x", revenue:"$25,000", contact:"Ashley Valentine",  title:"National Account Director",         email:"avalentine@tampabay.com",           email2:"bdooleynewbill@visittampabay.com",      form:"X", formDate:"3/24/2026",  formInitials:"AV",    formRep:"Ashley Valentine",    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Destination Toronto",                               status:"Salesforce: CLOSED WON", alpha:"TOR",  logo:"x", revenue:"$25,000", contact:"Heather Neale",    title:"Managing Director of Sales",        email:"hneale@destinationtoronto.com",     email2:"",                                     form:"X", formDate:"3/2/2026",   formInitials:"HN",  formRep:"Heather Neale",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   // ── PIPELINE · HAS FORM ──
@@ -2331,56 +2297,6 @@ function copyChaseEmails() {
 
 // ─── PARTNER CONTACT DIRECTORY ────────────────────────────────────────────────
 
-function renderContactDirectory() {
-  const tbody = document.getElementById('contact-dir-body');
-  if (!tbody) return;
-
-  tbody.innerHTML = sponsorData.map(s => {
-    const isClosed = s.status && s.status.includes('CLOSED WON');
-    const isPipeline = s.status && (s.status.includes('Pipeline') || s.status.includes('In Pipeline'));
-    const statusLabel = isClosed ? 'Closed Won' : isPipeline ? 'Pipeline' : (s.status || '—');
-    const statusColor = isClosed ? 'var(--flag-green)' : isPipeline ? '#F59E0B' : '#6B7280';
-    const hasForm = s.form && s.form.toString().trim() !== '';
-    return `<tr data-status="${statusLabel.toLowerCase()}" data-name="${s.name.toLowerCase()}" data-contact="${(s.contact||'').toLowerCase()}">
-      <td style="font-weight:600">${s.name}</td>
-      <td><span style="font-size:10px;background:var(--blue-pale);color:var(--blue-dark);padding:2px 8px;border-radius:10px">${s.alpha||'—'}</span></td>
-      <td><span style="font-size:10px;font-weight:700;color:${statusColor}">${statusLabel}</span></td>
-      <td style="font-weight:600">${s.revenue||'—'}</td>
-      <td style="font-size:11px">${s.contact||'<span style="color:#D1D5DB">TBD</span>'}</td>
-      <td style="font-size:11px">${s.email ? `<a href="mailto:${s.email}" style="color:var(--blue-mid)">${s.email}</a>` : '<span style="color:#D1D5DB">TBD</span>'}</td>
-      <td style="font-size:11px">${s.phone||'<span style="color:#D1D5DB">TBD</span>'}</td>
-      <td style="text-align:center">${hasForm ? '✅' : '⬜'}</td>
-      <td style="font-size:11px;color:var(--text-secondary)">${s.title||''}</td>
-    </tr>`;
-  }).join('');
-}
-
-function filterContactDir() {
-  const q = (document.getElementById('contact-search')?.value || '').toLowerCase();
-  const status = document.getElementById('contact-filter-status')?.value || 'all';
-  document.querySelectorAll('#contact-dir-body tr').forEach(row => {
-    const name = row.dataset.name || '';
-    const contact = row.dataset.contact || '';
-    const rowStatus = row.dataset.status || '';
-    const matchQ = !q || name.includes(q) || contact.includes(q);
-    const matchStatus = status === 'all' || rowStatus.includes(status);
-    row.style.display = matchQ && matchStatus ? '' : 'none';
-  });
-}
-
-function printContactDir() {
-  const table = document.getElementById('contact-dir-table').outerHTML;
-  const win = window.open('', '_blank');
-  win.document.write(`<!DOCTYPE html><html><head><title>Partner Contact Directory · PCMA Foundation 2026</title>
-  <style>body{font-family:sans-serif;font-size:11px;padding:20px} h1{font-size:16px;margin-bottom:4px} h2{font-size:12px;font-weight:normal;color:#666;margin-top:0;margin-bottom:16px}
-  table{border-collapse:collapse;width:100%} th,td{border:1px solid #ddd;padding:5px 8px;text-align:left} th{background:#1A3F7A;color:white;font-size:10px} tr:nth-child(even){background:#F8F9FA}
-  a{color:#2B5EAC} @media print{button{display:none}}</style></head><body>
-  <h1>PCMA Foundation 2026 Partnership Summit · Partner Contact Directory</h1>
-  <h2>Vancouver, BC · August 27–30, 2026</h2>
-  ${table}<p style="margin-top:16px;font-size:10px;color:#999">Generated ${new Date().toLocaleDateString()} · Partnership Summit Dashboard</p>
-  <script>window.print();<\/script></body></html>`);
-}
-
 // ─── REGISTRATION → TRAVEL CONVERSION ────────────────────────────────────────
 
 function updateConversionPanel(derivedData) {
@@ -2420,7 +2336,6 @@ const _origRefresh = typeof refreshDashboard === 'function' ? refreshDashboard :
 
 function initNewPanels() {
   renderChaseList();
-  renderContactDirectory();
   update2024Stats();
   // Update conversion panel if data is loaded
   const derived = {};
