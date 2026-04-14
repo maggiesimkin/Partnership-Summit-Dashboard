@@ -613,7 +613,7 @@
     <div class="detail-card">
       <div class="detail-card-header">
         <h3>Housing &amp; Travel Status</h3>
-        <span class="source-tag">ATC · Mar 23 · Passkey not yet open</span>
+        <span class="source-tag">Passkey · ATC · not yet open</span>
       </div>
       <div id="housing-table-wrap">
         <div class="empty-state"><div class="icon">🏨</div><p>Housing (Passkey) and Travel (ATC) haven't opened yet. Upload exports when available.</p></div>
@@ -628,13 +628,12 @@
       <h3>✈ Travel — Year-over-Year Pacing &amp; Flight Cost Tracker</h3>
       <div style="display:flex;gap:8px;align-items:center">
         <span class="source-tag">ATC + Flight Request Form · 2025 baseline</span>
-        <button onclick="document.getElementById('file-flightcost').click()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:7px;padding:5px 12px;cursor:pointer">↑ Upload 2026 Costs</button>
-        <input type="file" id="file-flightcost" accept=".csv" onchange="handleFlightCostUpload(this)" style="display:none">
+
       </div>
     </div>
 
     <!-- SUMMARY STATS ROW -->
-    <div style="padding:16px 20px 14px;display:grid;grid-template-columns:repeat(7,1fr);gap:12px;border-bottom:1px solid var(--border);background:var(--bg)">
+    <div style="padding:16px 20px 14px;display:grid;grid-template-columns:repeat(6,1fr);gap:12px;border-bottom:1px solid var(--border);background:var(--bg)">
       <div>
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2025 Forms</div>
         <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">112</div>
@@ -645,11 +644,7 @@
         <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">192</div>
         <div style="font-size:10px;color:var(--text-secondary)">Tampa · primary + guests</div>
       </div>
-      <div>
-        <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2024 Travelers</div>
-        <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-secondary)">244</div>
-        <div style="font-size:10px;color:var(--text-secondary)">Mexico · ATC ticketed</div>
-      </div>
+
       <div>
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">Peak Form Window</div>
         <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-primary)">9–8w</div>
@@ -658,7 +653,7 @@
       <div>
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">Prior Year Cost</div>
         <div style="font-family:'DM Serif Display',serif;font-size:24px;color:var(--text-secondary)" id="cost2025-stat">$159,053</div>
-        <div style="font-size:10px;color:var(--text-secondary)" id="cost2025-sub">2024 Mexico · 244 travelers · $652 avg</div>
+        <div style="font-size:10px;color:var(--text-secondary)" id="cost2025-sub">2025 Tampa · 192 travelers · $828 avg</div>
       </div>
       <div>
         <div style="font-size:9px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--text-secondary);margin-bottom:5px">2026 Cost To Date</div>
@@ -712,17 +707,6 @@
             <div style="font-size:11px;margin-top:6px;color:var(--text-secondary);opacity:.7">As ATC sends invoices, log each week's<br>ticket count and cumulative spend</div>
           </div>
         </div>
-        <!-- Manual cost entry -->
-        <div style="margin-top:14px;padding:12px 14px;background:var(--blue-pale);border-radius:8px">
-          <div style="font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--blue-dark);margin-bottom:8px">Quick Add — Log a week's costs</div>
-          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
-            <input id="fc-week" type="text" placeholder="Week (e.g. Jun-2)" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:90px;background:white;color:var(--text-primary)">
-            <input id="fc-tickets" type="number" placeholder="# tickets" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:80px;background:white;color:var(--text-primary)">
-            <input id="fc-cost" type="number" placeholder="Total cost $" style="font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--blue-border);border-radius:6px;padding:5px 9px;width:100px;background:white;color:var(--text-primary)">
-            <button onclick="addFlightCostEntry()" style="font-family:'DM Sans',sans-serif;font-size:11px;font-weight:600;background:var(--blue-mid);color:white;border:none;border-radius:6px;padding:6px 14px;cursor:pointer">+ Add</button>
-            <button onclick="clearFlightCosts()" style="font-family:'DM Sans',sans-serif;font-size:11px;color:var(--text-secondary);background:none;border:1px solid var(--border);border-radius:6px;padding:5px 10px;cursor:pointer">Clear</button>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -748,7 +732,7 @@
     <div class="detail-card">
       <div class="detail-card-header">
         <h3>Partnership Revenue Detail</h3>
-        <span class="source-tag">Salesforce · as of Mar 24</span>
+        <span class="source-tag">Salesforce · as of Mar 30</span>
       </div>
       <div id="revenue-table-wrap">
         <div class="empty-state"><div class="icon">💼</div><p>Upload revenue CSV to see sponsor detail.</p></div>
@@ -799,7 +783,7 @@
     <div class="detail-card" id="conversionPanel">
       <div class="detail-card-header">
         <h3>✈ Registration → Travel Conversion</h3>
-        <span class="source-tag">Rainfocus + ATC · YOY baseline 2024</span>
+        <span class="source-tag">Rainfocus + ATC · YOY baseline 2025</span>
       </div>
       <div style="padding:12px 0 6px">
         <!-- 2026 Live -->
@@ -824,25 +808,10 @@
           </div>
           <div id="conv-status-2026" style="font-size:11px;color:var(--text-secondary);margin-top:4px;text-align:center">Upload Rainfocus + ATC exports to populate</div>
         </div>
-        <!-- 2024 Baseline -->
+        <!-- 2025 Baseline -->
         <div style="border-top:1px solid var(--border);padding-top:12px">
-          <div style="font-size:11px;font-weight:600;color:var(--text-secondary);letter-spacing:.5px;margin-bottom:8px">2024 BASELINE · Mexico (Partnership Summit)</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
-            <div style="background:#F3F4F6;border-radius:8px;padding:10px;text-align:center">
-              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#6B7280">244</div>
-              <div style="font-size:10px;color:#9CA3AF">ATC Travelers</div>
-            </div>
-            <div style="background:#F3F4F6;border-radius:8px;padding:10px;text-align:center">
-              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:#6B7280">112</div>
-              <div style="font-size:10px;color:#9CA3AF">Flight Forms</div>
-            </div>
-            <div style="background:#6B7280;border-radius:8px;padding:10px;text-align:center">
-              <div style="font-family:'DM Serif Display',serif;font-size:22px;color:white">~46%</div>
-              <div style="font-size:10px;color:rgba(255,255,255,0.7)">Form/Traveler Rate</div>
-            </div>
-          </div>
           <!-- 2025 baseline -->
-          <div style="border-top:1px solid var(--border);padding-top:10px;margin-top:10px">
+          <div>
             <div style="font-size:11px;font-weight:600;color:var(--text-secondary);letter-spacing:.5px;margin-bottom:8px">2025 BASELINE · Tampa (Partnership Summit)</div>
             <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px">
               <div style="background:#F3F4F6;border-radius:8px;padding:10px;text-align:center">
@@ -858,12 +827,6 @@
                 <div style="font-size:10px;color:rgba(255,255,255,0.7)">Form/Traveler Rate</div>
               </div>
             </div>
-          </div>
-          <!-- 2024 Cost -->
-          <div style="margin-top:10px;padding:8px 10px;background:#F9FAFB;border-radius:8px;font-size:11px;color:var(--text-secondary);display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;text-align:center">
-            <div><strong style="font-size:13px;color:var(--text-primary)">$159,053</strong><br>2024 Total Air Cost</div>
-            <div><strong style="font-size:13px;color:var(--text-primary)">$652</strong><br>2024 Avg/Person</div>
-            <div><strong style="font-size:13px;color:var(--text-primary)">United #1</strong><br>Top Airline (94 pax)</div>
           </div>
         </div>
       </div>
@@ -935,11 +898,11 @@
     <!-- SUMMARY BADGES -->
     <div style="display:flex;gap:10px;padding:14px 20px 4px;flex-wrap:wrap">
       <div style="background:var(--flag-green);background:rgba(26,122,74,0.1);border:1px solid rgba(26,122,74,0.25);border-radius:8px;padding:8px 16px;text-align:center">
-        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-green)">23</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-green)">24</div>
         <div style="font-size:10px;font-weight:600;color:var(--flag-green);text-transform:uppercase;letter-spacing:.5px">Renewed · Closed Won</div>
       </div>
       <div style="background:rgba(212,115,10,0.08);border:1px solid rgba(212,115,10,0.25);border-radius:8px;padding:8px 16px;text-align:center">
-        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-amber)">5</div>
+        <div style="font-family:'DM Serif Display',serif;font-size:22px;color:var(--flag-amber)">4</div>
         <div style="font-size:10px;font-weight:600;color:var(--flag-amber);text-transform:uppercase;letter-spacing:.5px">Renewed · In Pipeline</div>
       </div>
       <div style="background:rgba(192,57,43,0.08);border:1px solid rgba(192,57,43,0.2);border-radius:8px;padding:8px 16px;text-align:center">
@@ -975,7 +938,7 @@
         <tbody>
 
           <!-- CLOSED WON RENEWALS -->
-          <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-green);padding:8px 18px">✓ Renewed — Closed Won (23)</td></tr>
+          <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-green);padding:8px 18px">✓ Renewed — Closed Won (24)</td></tr>
           <tr><td>Visit Anaheim</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-green)">CLOSED WON</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr><td>Visit Austin</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-green)">CLOSED WON</span></td><td style="color:var(--flag-green)">✓</td><td></td></tr>
           <tr><td>Caesars Entertainment</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-green)">CLOSED WON</span></td><td style="color:var(--flag-green)">✓</td><td></td></tr>
@@ -1002,9 +965,9 @@
           <tr><td>Destination Toronto</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-green)">CLOSED WON</span></td><td style="color:var(--flag-green)">✓</td><td></td></tr>
 
           <!-- PIPELINE RENEWALS -->
-          <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-amber);padding:8px 18px">◎ Renewed — In Pipeline (5)</td></tr>
+          <tr><td colspan="4" style="background:var(--bg);font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--flag-amber);padding:8px 18px">◎ Renewed — In Pipeline (4)</td></tr>
           <tr><td>Marriott International</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Buying Decision</td></tr>
-          <tr><td>Experience Columbus</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Buying Decision</td></tr>
+          <tr><td>Experience Columbus</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-green)">CLOSED WON</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)"></td></tr>
           <tr><td>Philadelphia Convention &amp; Visitors Bureau</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Proposal Development · Jul 1 fiscal</td></tr>
           <tr><td>Visit Baltimore</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Buying Decision · Jul 1 fiscal</td></tr>
           <tr><td>Rosen Hotels &amp; Resorts</td><td><span style="font-size:10px;font-weight:700;color:var(--flag-amber)">IN PIPELINE</span></td><td style="color:var(--flag-green)">✓</td><td style="font-size:11px;color:var(--text-secondary)">Buying Decision</td></tr>
@@ -1053,7 +1016,7 @@ const state = {
   revenue: null  // not used — SF data is hardcoded below
 };
 
-// ─── SALESFORCE DATA (hardcoded from export Mar 24 2026) ──
+// ─── SALESFORCE DATA (hardcoded from export Mar 30 2026) ──
 const SF_CLOSED_WON = [
   { name: "Ottawa Tourism 2026 Explore Marketing Agreement", amount: 25000, closeDate: "2026-01-21", level: "Explore" },
   { name: "New Orleans & Company 2026 Excel Partnership", amount: 25000, closeDate: "2026-02-03", level: "Excel" },
@@ -1081,13 +1044,15 @@ const SF_CLOSED_WON = [
   { name: "Visit Anaheim - 2025-2026 - Engage Partnership", amount: 25000, closeDate: "2026-01-02", level: "Engage" },
   { name: "Visit Salt Lake 2026 Engage Partnership", amount: 25000, closeDate: "2025-12-16", level: "Engage" },
   { name: "Caesars Entertainment FY2025/2026 Engage Partnership", amount: 25000, closeDate: "2025-10-27", level: "Engage" },
+  { name: "Experience Columbus 2026 Engage Partnership", amount: 25000, closeDate: "2026-04-06", level: "Engage" },
 ];
 
 const SF_PIPELINE = [
   { name: "Marriott International 2026 Experience Partnership", amount: 25000, closeDate: "2025-12-19", level: "Experience" },
-  { name: "Experience Columbus 2026 Engage Partnership", amount: 25000, closeDate: "2026-03-13", level: "Engage" },
   { name: "Philadelphia CVB - FYJuly2026-27 Engage Partnership", amount: 25000, closeDate: "2026-07-01", level: "Engage" },
   { name: "Visit Baltimore - FYJuly2026-27 Engage Partnership", amount: 25000, closeDate: "2026-07-01", level: "Engage" },
+  { name: "San Diego Tourism Authority - Partnership Summit 2026", amount: 25000, closeDate: "2026-04-03", level: "Engage" },
+  { name: "Rosen Hotels & Resorts - Partnership Summit 2026", amount: 25000, closeDate: "2026-07-01", level: "Engage" },
 ];
 
 let wowChartInst = null;
@@ -1233,9 +1198,9 @@ function computeDerived() {
   }
 
   // ── TRAVEL ──
-  // ATC data hardcoded from export Mar 24 2026 — 13 travelers, all TICKETED
-  const ATC_TRAVELERS = 13;
-  const ATC_TICKETED  = 13;
+  // ATC data hardcoded — Wk1 Mar 23: 13 travelers · Wk2 Mar 30: 40 travelers (38 sponsor/client + 2 PCMA staff)
+  const ATC_TRAVELERS = 40;
+  const ATC_TICKETED  = 40;
   if (state.travel) {
     const weeks = [...new Set(state.travel.map(r => r.week))].sort();
     const latestWk = weeks[weeks.length - 1];
@@ -1256,8 +1221,8 @@ function computeDerived() {
     d.travelTransfers = 0;
     d.travelWoW       = 0;
     // Week 1 baseline — week of Mar 23 2026
-    d.travelWeeks        = ['Wk1 (Mar 23)'];
-    d.travelWeeklyTotals = [ATC_TRAVELERS];
+    d.travelWeeks        = ['Wk1 (Mar 23)', 'Wk2 (Mar 30)'];
+    d.travelWeeklyTotals = [13, ATC_TRAVELERS];
   }
 
   // ── REVENUE (Salesforce) ──
@@ -1323,7 +1288,7 @@ function renderMetricCards(d) {
       document.getElementById('travel-bar').style.width = Math.min(100, pct) + '%';
       document.getElementById('travel-goal-label').textContent = `${pct}% of registered attendees`;
     } else {
-      document.getElementById('travel-sub').textContent = `travelers · IHG (4) · Milwaukee (3) · Marriott (4) · Savannah (2)`;
+      document.getElementById('travel-sub').textContent = `travelers ticketed · sponsor matching paused until reg opens`;
       document.getElementById('travel-wow').textContent = 'ATC · Mar 24';
       document.getElementById('travel-wow').className = 'metric-wow flat';
       document.getElementById('travel-bar').style.width = '0%';
@@ -1425,6 +1390,9 @@ function renderFlags(d) {
   if (noForm.length > 0) {
     flags.push({ level: 'amber', icon: '⚠️', title: `${noForm.length} closed/pipeline sponsors haven't submitted their commitment form`, detail: noForm.map(s => s.name.split('(')[0].trim()).join(', ') });
   }
+
+  // Process flags — SF coordination needed
+  flags.push({ level: 'amber', icon: '⚠️', title: `Rosen Hotels & Resorts — SF opportunity needs to be created`, detail: 'Rosen is in the sponsor master as Pipeline but has no Salesforce opportunity or sales order on record. Katie to create the SF record.' });
 
   // ATC: travelers with no matching sponsor
   // Overdue pipeline (SF)
@@ -1565,15 +1533,29 @@ function renderYOYChart(d) {
     }
   ];
 
-  // If 2026 ATC data is uploaded, overlay it
+  // If 2026 ATC data is available, overlay it at the correct weeks-out position
   if (d.travelWeeks && d.travelWeeklyTotals && d.travelWeeks.length > 0) {
-    const len = d.travelWeeks.length;
+    const eventDate = new Date('2026-08-27');
+    const today = new Date();
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const weeksOut = Math.round((eventDate - today) / msPerWeek); // ~19 right now
+
     const mapped2026 = Array(weeks2025.length).fill(null);
     let runningTotal = 0;
     d.travelWeeklyTotals.forEach((val, i) => {
       runningTotal += val;
-      const idx = weeks2025.length - len + i;
-      if (idx >= 0 && idx < weeks2025.length) mapped2026[idx] = runningTotal;
+      // Place each week's cumulative at the correct weeks-out position
+      const weekPosition = weeksOut + (d.travelWeeklyTotals.length - 1 - i);
+      const idx = weeks2025.indexOf(weekPosition);
+      if (idx >= 0) mapped2026[idx] = runningTotal;
+      // If exact week not in labels, find closest
+      else {
+        const closest = weeks2025.reduce((prev, curr) =>
+          Math.abs(curr - weekPosition) < Math.abs(prev - weekPosition) ? curr : prev
+        );
+        const closestIdx = weeks2025.indexOf(closest);
+        if (closestIdx >= 0 && mapped2026[closestIdx] === null) mapped2026[closestIdx] = runningTotal;
+      }
     });
     datasets.push({
       label: '2026 Live (Vancouver)',
@@ -1640,21 +1622,7 @@ function renderFormPacingChart(travelData) {
   let cumB = 0;
   const cumBookings2025 = weeks.map(w => { cumB += (weeklyBookings[w]||0); return cumB; });
 
-  // 2024 Mexico: weekly bookings by invoice date (weeks before Sep 5 2024)
-  // Distribution: 12w:14, 11w:8, 10w:15, 8w:10, 7w:42, 6w:32, 5w:34, 4w:51, 3w:31, 2w:2, 1w:3
-  const weeklyMexico2024 = {12:14,11:8,10:15,9:0,8:10,7:42,6:32,5:34,4:51,3:31,2:2,1:3};
-  let cumM = 0;
-  const cumMexico2024 = weeks.map(w => { cumM += (weeklyMexico2024[w]||0); return cumM; });
-
   const datasets = [
-    {
-      label: '2024 Mexico booked (244)',
-      data: cumMexico2024,
-      borderColor: '#9CA3AF',
-      backgroundColor: 'rgba(156,163,175,0.05)',
-      borderDash: [2,4],
-      tension: 0.3, pointRadius: 2, pointBackgroundColor: '#9CA3AF', fill: true, borderWidth: 1.5,
-    },
     {
       label: '2025 Forms submitted (112)',
       data: cumForms2025,
@@ -1673,15 +1641,27 @@ function renderFormPacingChart(travelData) {
     }
   ];
 
-  // 2026 live ATC overlay when uploaded
+  // 2026 live ATC overlay — positioned at actual weeks-out from event
   if (travelData && travelData.travelWeeks && travelData.travelWeeks.length > 0) {
-    const len = travelData.travelWeeks.length;
+    const eventDate = new Date('2026-08-27');
+    const today = new Date();
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const weeksOut = Math.round((eventDate - today) / msPerWeek);
+
     const mapped = Array(weeks.length).fill(null);
     let running = 0;
     travelData.travelWeeklyTotals.forEach((val, i) => {
       running += val;
-      const idx = weeks.length - len + i;
+      const weekPosition = weeksOut + (travelData.travelWeeklyTotals.length - 1 - i);
+      const idx = weeks.indexOf(weekPosition);
       if (idx >= 0) mapped[idx] = running;
+      else {
+        const closest = weeks.reduce((prev, curr) =>
+          Math.abs(curr - weekPosition) < Math.abs(prev - weekPosition) ? curr : prev
+        );
+        const closestIdx = weeks.indexOf(closest);
+        if (closestIdx >= 0 && mapped[closestIdx] === null) mapped[closestIdx] = running;
+      }
     });
     datasets.push({
       label: '2026 Flights live',
@@ -1718,7 +1698,9 @@ function renderFormPacingChart(travelData) {
 }
 
 // ─── FLIGHT COST STATE + HANDLERS ────────────────────────
-const flightCostState = { entries: [] };
+const flightCostState = { entries: [
+  { week: 'Wk2 (Mar 30)', tickets: 40, cost: 40630.64 }
+] };
 
 function handleFlightCostUpload(input) {
   const file = input.files[0];
@@ -1760,7 +1742,7 @@ function updateFlightCostUI() {
   const totalTickets = entries.reduce((s,e) => s+e.tickets, 0);
   const avg = totalTickets > 0 ? totalCost/totalTickets : 0;
 
-  document.getElementById('cost2026-stat').textContent = '$' + fmt(totalCost);
+  document.getElementById('cost2026-stat').textContent = '$' + totalCost.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2});
   document.getElementById('cost2026-sub').textContent = `${totalTickets} ticket${totalTickets!==1?'s':''} booked`;
   document.getElementById('costAvg-stat').textContent = avg > 0 ? '$' + Math.round(avg).toLocaleString() : '—';
 
@@ -1864,9 +1846,19 @@ function renderRegTable(d) {
 function renderHousingTable(d) {
   const wrap = document.getElementById('housing-table-wrap');
   const hasHousing = !!d.housingByHotel;
-  const hasTravel  = d.travelTotal !== undefined;
 
-  if (!hasHousing && !hasTravel) return;
+  if (!hasHousing) {
+    wrap.innerHTML = `
+      <div style="padding:20px 24px;display:flex;flex-direction:column;gap:12px">
+        <div style="padding:12px 14px;background:var(--neutral-light);border-radius:8px;font-size:12px;color:var(--text-secondary);border:1px dashed var(--border)">
+          ✈ <strong>Travel</strong> — Sponsor-to-guest matching will be available once registration opens.
+        </div>
+        <div style="padding:12px 14px;background:var(--neutral-light);border-radius:8px;font-size:12px;color:var(--text-secondary);border:1px dashed var(--border)">
+          🏨 <strong>Housing (Passkey)</strong> — Not yet open. Upload export when available.
+        </div>
+      </div>`;
+    return;
+  }
 
   // ── ATC TRAVEL SECTION ──
   const atcTravelers = [
@@ -1878,7 +1870,7 @@ function renderHousingTable(d) {
 
   const travelHTML = `
     <div style="padding:14px 18px 6px;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--teal-dark)">
-      ✈ ATC · Travel Bookings — Wk1 (Mar 23) · ${d.travelTotal} travelers
+      ✈ ATC · Travel Bookings — Wk2 (Mar 30) · ${d.travelTotal} travelers
     </div>
     <table>
       <thead><tr><th>Sponsor</th><th style="text-align:center">Travelers</th><th>Names</th><th style="text-align:center">Status</th></tr></thead>
@@ -2007,7 +1999,7 @@ function renderInsights(d) {
 // ─── HEADER META ──────────────────────────────────────────
 function updateHeaderMeta(d) {
   if (d.latestWk) document.getElementById('weekBadge').textContent = `Reporting: ${d.latestWk}`;
-  else document.getElementById('weekBadge').textContent = `Week of March 23, 2026`;
+  else document.getElementById('weekBadge').textContent = `Week of March 30, 2026`;
   document.getElementById('lastUpdated').textContent = `Updated ${new Date().toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })}`;
 }
 
@@ -2032,14 +2024,14 @@ const SPONSOR_MASTER_RAW = [
   { name:"Meet Long Beach",                                   status:"Salesforce: CLOSED WON", alpha:"LON",  logo:"x", revenue:"$25,000", contact:"Debbie Glenn",      title:"Area National Sales Director",      email:"debbieg@meetlb.com",                email2:"JenniferP@meetLB.com",                 form:"X", formDate:"3/24/2026",  formInitials:"DG",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Business Events Montreal",                          status:"Salesforce: CLOSED WON", alpha:"MON",  logo:"x", revenue:"$25,000", contact:"Mylène Gagnon",    title:"",                                  email:"mgagnon@mtl.org",                  email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"New Orleans & Company",                             status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Stephanie Turner", title:"",                                  email:"sturner@neworleans.com",            email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
-  { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Elaine Williams",  title:"",                                  email:"ewilliams@mccno.com",               email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"New Orleans Ernest N. Morial Convention Center",    status:"Salesforce: CLOSED WON", alpha:"NEW",  logo:"x", revenue:"$25,000", contact:"Elaine Williams",  title:"",                                  email:"ewilliams@mccno.com",               email2:"",                                     form:"X", formDate:"3/30/2026",  formInitials:"EW",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Visit Orlando",                                      status:"Salesforce: CLOSED WON", alpha:"ORL",  logo:"x", revenue:"$25,000", contact:"Lisa Messina",     title:"",                                  email:"Lisa.Messina@visitorlando.com",     email2:"emily.clancy@visitorlando.com",         form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
-  { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"Jeff Gassaway",     title:"",                                  email:"jgassaway@visitsaltlake.com",       email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
+  { name:"Visit Salt Lake",                                   status:"Salesforce: CLOSED WON", alpha:"SAL",  logo:"x", revenue:"$25,000", contact:"Jeff Gassaway",     title:"",                                  email:"jgassaway@visitsaltlake.com",       email2:"",                                     form:"X", formDate:"3/30/2026",  formInitials:"JG",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Visit Savannah",                                    status:"Salesforce: CLOSED WON", alpha:"SAV",  logo:"x", revenue:"$25,000", contact:"Kellie Linder",     title:"VP of Sales",                       email:"klinder@visitsavannah.com",         email2:"dfeldman@visitsavannah.com",            form:"X", formDate:"3/24/2026",  formInitials:"KL",    formRep:"Kellie Linder",       registered:"", flight:"X", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Visit Tampa Bay",                                   status:"Salesforce: CLOSED WON", alpha:"TAM",  logo:"x", revenue:"$25,000", contact:"Ashley Valentine",  title:"National Account Director",         email:"avalentine@tampabay.com",           email2:"bdooleynewbill@visittampabay.com",      form:"X", formDate:"3/24/2026",  formInitials:"AV",    formRep:"Ashley Valentine",    registered:"", flight:"", dineAround:"", msoe:"22-Jan", liaison:"" },
   { name:"Destination Toronto",                               status:"Salesforce: CLOSED WON", alpha:"TOR",  logo:"x", revenue:"$25,000", contact:"Heather Neale",    title:"Managing Director of Sales",        email:"hneale@destinationtoronto.com",     email2:"",                                     form:"X", formDate:"3/2/2026",   formInitials:"HN",  formRep:"Heather Neale",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   // ── PIPELINE · HAS FORM ──
-  { name:"Experience Columbus",                               status:"In Pipeline",            alpha:"COL",  logo:"x",  revenue:"$25,000", contact:"Bill Adams",        title:"Chief Sales Officer",               email:"badams@experiencecolumbus.com",     email2:"cneal@experiencecolumbus.com",          form:"X", formDate:"1/22/2026", formInitials:"WA",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"Experience Columbus",                               status:"Salesforce: CLOSED WON", alpha:"COL",  logo:"x",  revenue:"$25,000", contact:"Bill Adams",        title:"Chief Sales Officer",               email:"badams@experiencecolumbus.com",     email2:"cneal@experiencecolumbus.com",          form:"X", formDate:"1/22/2026", formInitials:"WA",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Visit Seattle",                                     status:"Salesforce: CLOSED WON",   alpha:"SEA",  logo:"x", revenue:"$25,000", contact:"Chris Connelly",    title:"",                                  email:"cconnelly@visitseattle.com",        email2:"lpeterson@visitseattle.org",            form:"X", formDate:"1/27/2026", formInitials:"CC",  formRep:"",                 registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Marriott International",                            status:"In Pipeline",            alpha:"MAR",  logo:"x",  revenue:"$25,000", contact:"Maureen Selke",     title:"Senior Director Global Sales",      email:"maureen.selke@marriott.com",        email2:"",                                     form:"X", formDate:"1/27/2026", formInitials:"ms",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   { name:"Events DC",                                         status:"Salesforce: CLOSED WON",   alpha:"DC",   logo:"x", revenue:"$25,000", contact:"Stacey Knoppel",    title:"",                                  email:"sknoppel@eventsdc.com",             email2:"",                                     form:"X", formDate:"3/24/2026",  formInitials:"SK",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
@@ -2052,7 +2044,7 @@ const SPONSOR_MASTER_RAW = [
   // ── PIPELINE ──
   { name:"Rosen Hotels & Resorts",                             status:"In Pipeline",            alpha:"ROS",  logo:"x",         revenue:"$25,000", contact:"Suzanne Kennedy",   title:"",                                  email:"SKennedy@rosenhotels.com",          email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
   // ── NO STATUS / PROSPECT ──
-  { name:"San Diego Tourism Authority",                        status:"Prospect",               alpha:"SAND", logo:"need",          revenue:"$25,000", contact:"Angie Ranalli",      title:"",                                  email:"aranalli@sandiego.org",             email2:"jaranda@sandiego.org",                 form:"X", formDate:"3/24/2026",  formInitials:"AR",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
+  { name:"San Diego Tourism Authority",                        status:"In Pipeline",            alpha:"SAND", logo:"need",          revenue:"$25,000", contact:"Angie Ranalli",      title:"",                                  email:"aranalli@sandiego.org",             email2:"jaranda@sandiego.org",                 form:"X", formDate:"3/24/2026",  formInitials:"AR",  formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"" },
     // ── HOST CITY ──
   { name:"Destination Vancouver",                             status:"Host City",              alpha:"VAN",  logo:"need solo", revenue:"$0", contact:"Alison Best",    title:"",                                  email:"abest@destinationvancouver.com",    email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", notes:"Per Agreement: 2 groups" },
   { name:"Westin Bayshore",                                    status:"Host City",              alpha:"WES",  logo:"need",      revenue:"$0", contact:"",               title:"",                                  email:"",                                 email2:"",                                     form:"",  formDate:"",          formInitials:"",    formRep:"",                    registered:"", flight:"", dineAround:"", msoe:"",      liaison:"", notes:"Per Agreement: 1 participant, no guests" },
@@ -2326,17 +2318,12 @@ function updateConversionPanel(derivedData) {
   }
 }
 
-// ─── UPDATE 2024 MEXICO BASELINE IN STATS ─────────────────────────────────────
-function update2024Stats() {
-  // stat is already hardcoded in HTML; this is a no-op placeholder
-}
-
 // ─── HOOK INTO refreshDashboard ───────────────────────────────────────────────
 const _origRefresh = typeof refreshDashboard === 'function' ? refreshDashboard : null;
 
 function initNewPanels() {
   renderChaseList();
-  update2024Stats();
+  updateFlightCostUI();
   // Update conversion panel if data is loaded
   const derived = {};
   if (state.reg) derived.regTotal = state.reg.length;
