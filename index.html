@@ -1630,7 +1630,7 @@ function renderFlags(d) {
 
   // Sponsor master flags
   const notInSF = sponsorData.filter(s => s.status.toLowerCase().includes('not in sf'));
-  if (notInSF.length > 0) {
+  if (false /* suppressed for this week per Maggie */ && notInSF.length > 0) {
     flags.push({ level: 'red', icon: '🚨', title: `${notInSF.length} sponsor(s) submitted a commitment form but have no Salesforce record`, detail: notInSF.map(s => s.name.split('(')[0].trim()).join(', ') + ' — SF records need to be created.' });
   }
   const missingContact = sponsorData.filter(s => (!s.contact || !s.email) && !s.status.toLowerCase().includes('host') && s.name.trim());
@@ -1638,15 +1638,15 @@ function renderFlags(d) {
     flags.push({ level: 'red', icon: '🚨', title: `${missingContact.length} sponsors missing contact name or email address`, detail: missingContact.map(s => s.name.split('(')[0].trim()).join(', ') });
   }
   const missingLogo = sponsorData.filter(s => !s.logo && !s.status.toLowerCase().includes('host') && s.name.trim());
-  if (missingLogo.length > 0) {
+  if (false /* suppressed for this week per Maggie */ && missingLogo.length > 0) {
     flags.push({ level: 'amber', icon: '⚠️', title: `${missingLogo.length} sponsors haven't provided their logo`, detail: missingLogo.map(s => s.name.split('(')[0].trim()).join(', ') });
   }
   const confirmNames = sponsorData.filter(s => s.name.toLowerCase().includes('confirm'));
-  if (confirmNames.length > 0) {
+  if (false /* suppressed for this week per Maggie */ && confirmNames.length > 0) {
     flags.push({ level: 'amber', icon: '⚠️', title: `${confirmNames.length} sponsor names need to be confirmed before materials go out`, detail: confirmNames.map(s => s.name).join(' · ') });
   }
   const noForm = sponsorData.filter(s => !s.form && (s.status.toLowerCase().includes('closed') || s.status.toLowerCase().includes('pipeline')));
-  if (noForm.length > 0) {
+  if (false /* suppressed for this week per Maggie */ && noForm.length > 0) {
     flags.push({ level: 'amber', icon: '⚠️', title: `${noForm.length} closed/pipeline sponsors haven't submitted their commitment form`, detail: noForm.map(s => s.name.split('(')[0].trim()).join(', ') });
   }
 
